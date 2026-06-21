@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SmartApart" />
+  <title>SmartApart | Apartman Yönetimi</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="style.css?v=1.0" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">SA</div>
+        <div>
+          <h1>SmartApart</h1>
+          <p>Mobil Apartman Yönetimi</p>
+        </div>
+      </div>
+      <div class="role-box">
+        <span id="activeRoleText">Yönetici</span>
+      </div>
+    </header>
+
+    <main>
+      <section id="loginView" class="login-card hidden">
+        <div class="login-logo">SA</div>
+        <h2>SmartApart Giriş</h2>
+        <p>Yönetici tüm sistemi, daire sakini sadece kendi dairesini görür.</p>
+        <button class="primary-btn" onclick="loginAsAdmin()">Yönetici Girişi</button>
+        <label class="field-label">Daire Sakini Girişi</label>
+        <select id="residentSelect"></select>
+        <button class="secondary-btn" onclick="loginAsResident()">Dairemi Gör</button>
+      </section>
+
+      <section id="dashboardView" class="page active">
+        <div class="section-head">
+          <h2>Dashboard</h2>
+          <button class="mini-btn" onclick="openLogin()">Rol Değiştir</button>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="card kasa-card">
+          <div>
+            <small>Kasa Durumu</small>
+            <strong id="kasaDurumu">₺0</strong>
+          </div>
+          <span>💰</span>
+        </div>
+      </section>
+
+      <section id="apartmentsView" class="page">
+        <div class="section-head">
+          <h2>Daire Kartları</h2>
+          <button class="mini-btn admin-only" onclick="openApartmentForm()">+ Daire</button>
+        </div>
+        <div id="apartmentList" class="list"></div>
+      </section>
+
+      <section id="duesView" class="page">
+        <div class="section-head">
+          <h2>Aidat Takibi</h2>
+          <button class="mini-btn admin-only" onclick="resetMonth()">Ayı Sıfırla</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr><th>Daire</th><th>Malik</th><th>Aidat</th><th>Durum</th></tr>
+            </thead>
+            <tbody id="duesTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="vehiclesView" class="page">
+        <div class="section-head">
+          <h2>Araç Takibi</h2>
+          <button class="mini-btn admin-only" onclick="openVehicleForm()">+ Araç</button>
+        </div>
+        <div id="vehicleList" class="list"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-page="dashboardView">🏠<span>Panel</span></button>
+      <button class="nav-btn" data-page="apartmentsView">👤<span>Daire</span></button>
+      <button class="nav-btn" data-page="duesView">💰<span>Aidat</span></button>
+      <button class="nav-btn" data-page="vehiclesView">🚗<span>Araç</span></button>
+    </nav>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalTitle">Kayıt</h3>
+        <button onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js?v=1.0"></script>
+</body>
+</html>
