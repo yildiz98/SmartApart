@@ -39,7 +39,7 @@
         <section id="home" class="page active">
           <div class="home-grid-top">
             <div class="hero">
-              <div><small>Hoş geldiniz,</small><h2 id="managerNameHero">Turgut Yiğit</h2><p>Yönetici</p></div>
+              <div><small>Hoş geldiniz,</small><h2 id="managerNameHero">Ahmet Yılmaz</h2><p>Yönetici</p></div>
               <img src="logo.png" class="hero-building" alt="EMFE 3 Apartmanı" />
             </div>
             <div class="stats-grid" id="statsGrid"></div>
@@ -102,7 +102,7 @@
 
         <section id="whatsapp" class="page"><div class="wa-head"><button onclick="showPage('home')">‹</button><h2>WhatsApp'a Gönder</h2></div><label>Mesaj Türü</label><select id="waType" onchange="renderWhatsapp()"><option value="gider">Son Yapılan Giderler</option><option value="aidat">Aidat Hatırlatma</option><option value="duyuru">Genel Duyuru</option><option value="ozet">Aylık Fon Özeti</option></select><label>Mesaj Önizleme</label><div class="wa-preview" id="waPreview"></div><button class="wa-btn" onclick="shareWhatsapp()">🟢 WhatsApp'ta Paylaş</button><button class="copy-btn" onclick="copyWhatsapp()">📋 Mesajı Kopyala</button></section>
 
-        <section id="profile" class="page"><div class="profile-card"><img src="logo.png" alt="EMFE 3"><h2 id="managerNameProfile">Turgut Yiğit</h2><p>Yönetici</p><small>EMFE 3 Apartmanı</small></div><button class="settings-row" onclick="backupData()">Yedek Al</button><label class="settings-row file-row">Yedek Geri Yükle<input type="file" accept=".json" onchange="restoreData(event)"></label><button class="settings-row danger" onclick="resetData()">Demo Verileri Sıfırla</button></section>
+        <section id="profile" class="page"><div class="profile-card"><img src="logo.png" alt="EMFE 3"><h2 id="managerNameProfile">Ahmet Yılmaz</h2><p>Yönetici</p><small>EMFE 3 Apartmanı</small></div><button class="settings-row" onclick="backupData()">Yedek Al</button><label class="settings-row file-row">Yedek Geri Yükle<input type="file" accept=".json" onchange="restoreData(event)"></label><button class="settings-row danger" onclick="resetData()">Demo Verileri Sıfırla</button></section>
       </main>
 
       <nav class="bottom-nav"><button class="active" data-page="home" onclick="showPage('home')">🏠<span>Ana Sayfa</span></button><button data-page="apartments" onclick="showPage('apartments')">🏢<span>Daireler</span></button><button data-page="payments" onclick="showPage('payments')">💳<span>Aidat</span></button><button data-page="expenses" onclick="showPage('expenses')">📋<span>Giderler</span></button><button data-page="fund" onclick="showPage('fund')">🏦<span>Fon</span></button><button data-page="profile" onclick="showPage('profile')">👤<span>Profil</span></button></nav>
