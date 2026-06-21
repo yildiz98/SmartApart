@@ -1,3 +1,7 @@
+// EMFE 3 SmartApart Firebase Ayarları
+// ÖNEMLİ: Bu dosyadaki projectId, Firebase Console'da kullanıcı oluşturduğun proje ile aynı olmalı.
+// Eğer Firebase Console URL'inde project/smartapart-46e77 görüyorsan, buradaki config de smartapart-46e77 projesinden alınmalı.
+
 window.EMFE3_FIREBASE = {
   enabled: true,
 
@@ -15,5 +19,5 @@ window.EMFE3_FIREBASE = {
   docId: "emfe3",
 
   adminEmail: "yonetim@emfe3.com",
-  adminPassword: "Poh1234"
+  adminPassword: ""
 };

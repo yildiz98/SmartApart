@@ -1,15 +1,23 @@
-const KEY='emfe3_smartapart_v17_firebase';
+const KEY='emfe3_smartapart_v18_firebase';
 let paymentFilter='all';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCPB0AY7cRjJ-DhS0YFPF4Y0Y2ZJUsXIN0",
-  authDomain: "smartapart-ab8de.firebaseapp.com",
-  projectId: "smartapart-ab8de",
-  storageBucket: "smartapart-ab8de.firebasestorage.app",
-  messagingSenderId: "875587120223",
-  appId: "1:875587120223:web:b60b64df851fd40052ffea",
-  measurementId: "G-DKR5RHYYBX"
+const firebaseSettings = window.EMFE3_FIREBASE || {
+  enabled: true,
+  config: {
+    apiKey: "AIzaSyCPB0AY7cRjJ-DhS0YFPF4Y0Y2ZJUsXIN0",
+    authDomain: "smartapart-ab8de.firebaseapp.com",
+    projectId: "smartapart-ab8de",
+    storageBucket: "smartapart-ab8de.firebasestorage.app",
+    messagingSenderId: "875587120223",
+    appId: "1:875587120223:web:b60b64df851fd40052ffea",
+    measurementId: "G-DKR5RHYYBX"
+  },
+  collection: "smartapart",
+  docId: "emfe3",
+  adminEmail: "yonetim@emfe3.com",
+  adminPassword: ""
 };
+const firebaseConfig = firebaseSettings.config;
 let fbApp=null, fbAuth=null, fbDb=null, fbDocRef=null, fbUnsub=null;
 let cloudReady=false, remoteLoaded=false, saveTimer=null, applyingRemote=false;
 const defaultData={manager:'Turgut Yiğit',apartments:[],payments:[],expenses:[],fundIncomes:[]};
@@ -162,14 +170,25 @@ async function loginAdmin(){
   const email=document.getElementById('loginEmail')?.value.trim();
   const password=document.getElementById('loginPassword')?.value;
   setText('loginError','');
+  if(!email || !password){ setText('loginError','E-posta ve şifre girin.'); return; }
   if(!fbAuth){ setText('loginError','Firebase bağlantısı yüklenemedi.'); return; }
   try{ await fbAuth.signInWithEmailAndPassword(email,password); }
-  catch(err){ setText('loginError','Giriş başarısız: e-posta veya şifreyi kontrol edin.'); console.error(err); }
+  catch(err){
+    console.error(err);
+    const code = err && err.code ? err.code : '';
+    let msg='Giriş başarısız. E-posta veya şifreyi kontrol edin.';
+    if(code.includes('user-not-found')) msg='Bu e-posta Firebase Authentication > Users içinde yok.';
+    if(code.includes('wrong-password') || code.includes('invalid-credential')) msg='Şifre hatalı veya kullanıcı bu Firebase projesinde oluşturulmamış.';
+    if(code.includes('invalid-email')) msg='E-posta formatı hatalı.';
+    if(code.includes('too-many-requests')) msg='Çok fazla deneme yapıldı. Biraz bekleyip tekrar deneyin.';
+    if(code.includes('network-request-failed')) msg='İnternet bağlantısı veya Firebase erişimi başarısız.';
+    setText('loginError', msg);
+  }
 }
 async function logoutAdmin(){ if(fbAuth) await fbAuth.signOut(); }
 function startCloudSync(user){
   cloudReady=true; remoteLoaded=false;
-  fbDocRef=fbDb.collection('smartApartData').doc('emfe3-main');
+  fbDocRef=fbDb.collection(firebaseSettings.collection || 'smartapart').doc(firebaseSettings.docId || 'emfe3');
   if(fbUnsub) fbUnsub();
   fbUnsub=fbDocRef.onSnapshot(async snap=>{
     applyingRemote=true;
@@ -186,15 +205,26 @@ function startCloudSync(user){
 }
 function initFirebaseApp(){
   try{
+    if(!firebaseSettings.enabled){
+      showLogin('Firebase pasif. firebase-config.js içinde enabled: true yapın.');
+      return;
+    }
     if(typeof firebase==='undefined') throw new Error('Firebase SDK bulunamadı');
+    if(!firebaseConfig || !firebaseConfig.apiKey || String(firebaseConfig.apiKey).includes('BURAYA')){
+      showLogin('Firebase config eksik. firebase-config.js dosyasını güncelleyin.');
+      return;
+    }
     fbApp=firebase.initializeApp(firebaseConfig);
     fbAuth=firebase.auth();
     fbDb=firebase.firestore();
+    try { fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch(e) {}
+    const emailInput=document.getElementById('loginEmail');
+    if(emailInput && firebaseSettings.adminEmail) emailInput.value=firebaseSettings.adminEmail;
     fbAuth.onAuthStateChanged(user=>{
       if(user){ startCloudSync(user); }
       else { cloudReady=false; remoteLoaded=false; if(fbUnsub) fbUnsub(); showLogin(); }
     });
-  }catch(err){ console.error(err); showLogin('Firebase başlatılamadı.'); }
+  }catch(err){ console.error(err); showLogin('Firebase başlatılamadı. Config/proje bilgilerini kontrol edin.'); }
 }
 function registerServiceWorker(){
   if ('serviceWorker' in navigator) {

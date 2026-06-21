@@ -21,3 +21,12 @@ service cloud.firestore {
   }
 }
 ```
+
+
+## V18 Firebase Giriş Düzeltmesi
+- firebase-config.js artık uygulama tarafından okunur.
+- Firestore yolu: `smartapart / emfe3`
+- Firebase giriş hataları daha anlaşılır hale getirildi.
+- Cache V18'e yükseltildi.
+
+Not: Firebase Console'da kullanıcıyı hangi projede oluşturduysan `firebase-config.js` içindeki `projectId` aynı proje olmalıdır.
