@@ -123,5 +123,18 @@ function closeModal(){modal.classList.add('hidden')}
 function backupData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='emfe3-yedek.json';a.click()}
 function restoreData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{data=JSON.parse(r.result);render()};r.readAsText(f)}
 function resetData(){if(confirm('Demo verilere dönülsün mü?')){localStorage.removeItem(KEY);data=structuredClone(defaultData);render()}}
-if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
-render();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    const reg = await navigator.serviceWorker.register('./service-worker.js');
+
+    reg.update();
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+
+    setInterval(() => {
+      reg.update();
+    }, 60000);
+  });
+}
