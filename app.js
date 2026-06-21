@@ -1,4 +1,4 @@
-const KEY='emfe3_smartapart_v12_clean';
+const KEY='emfe3_smartapart_v13_clean';
 let paymentFilter='all';
 const defaultData={manager:'Turgut Yiğit',apartments:[],payments:[],expenses:[],fundIncomes:[]};
 let data=load();
@@ -18,7 +18,7 @@ function setText(id,val){const el=document.getElementById(id); if(el) el.textCon
 function setHTML(id,val){const el=document.getElementById(id); if(el) el.innerHTML=val}
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));const titles={home:'Ana Sayfa',apartments:'Daireler',payments:'Aidat Takibi',incomes:'Ekstra Gelirler',expenses:'Giderler',fund:'Fon Yönetimi',profile:'Profil'};setText('pageTitle',titles[id]||'Ana Sayfa'); if(id==='whatsapp') renderWhatsapp(); render()}
 function render(){setText('managerNameHero',data.manager);setText('managerNameProfile',data.manager);renderStats();renderRecentExpenses();renderIncomes();renderApartments();renderPayments();renderFund();renderExpenses();renderCriticalDebtors();save()}
-function renderStats(){const occupied=data.apartments.length;const debtors=data.apartments.filter(a=>data.payments.some(p=>p.apartmentId===a.id&&!p.paid)).length;const stats=[['🏢','Toplam Daire',occupied,'Daire'],['✅','Dolu Daire',occupied,'Daire'],['👤','Kiracı Sayısı',occupied,'Kişi'],['🔴','Borçlu Daire',debtors,'Daire']];setHTML('statsGrid',stats.map(s=>`<div class="stat"><i>${s[0]}</i><div><span>${s[1]}</span><strong>${s[2]}</strong><small>${s[3]}</small></div></div>`).join(''));setText('monthlyIncome',money(totalPaid()));setText('fundBalance',money(balance()));setText('extraIncomeTotal',money(totalFundIncome()));setText('debtTotalHome',money(totalDebt()));setHTML('extraIncomeBreakdown',data.fundIncomes.slice(0,2).map(i=>`<b>• ${i.title}: ${money(i.amount)}</b>`).join(''))}
+function renderStats(){const occupied=data.apartments.length;const debtors=getDebtors().length;const stats=[['🏢','Toplam Daire',occupied,'Daire',''],['✅','Dolu Daire',occupied,'Daire',''],['👤','Kiracı Sayısı',occupied,'Kişi',''],['🔴','Borçlu Daire',debtors,'Daire','openDebtorsModal()']];setHTML('statsGrid',stats.map(s=>`<div class="stat ${s[4]?'clickable':''}" ${s[4]?`onclick="${s[4]}" title="Borçluları göster"`:''}><i>${s[0]}</i><div><span>${s[1]}</span><strong>${s[2]}</strong><small>${s[3]}</small></div>${s[4]?'<em class="tap-hint">Listele ›</em>':''}</div>`).join(''));setText('monthlyIncome',money(totalPaid()));setText('fundBalance',money(balance()));setText('extraIncomeTotal',money(totalFundIncome()));setText('debtTotalHome',money(totalDebt()));setHTML('extraIncomeBreakdown',data.fundIncomes.slice(0,2).map(i=>`<b>• ${i.title}: ${money(i.amount)}</b>`).join(''))}
 function expenseIcon(t){return t==='Temizlik'?'🧹':t==='Bahçe'?'🌳':t==='Bakım'?'🛠️':'⚡'}
 function renderRecentExpenses(){const rows=data.expenses.slice(0,4).map(e=>`<div class="row"><i>${expenseIcon(e.type)}</i><div><b>${e.job}</b><small>${trDate(e.date)}</small></div><strong class="red-text">${money(e.amount)}</strong><button>›</button></div>`).join('');setHTML('recentExpenses',rows||'<div class="empty">Henüz gider kaydı yok.</div>')}
 function renderIncomes(){const rows=data.fundIncomes.map(i=>`<div class="row"><i>💰</i><div><b>${i.title}</b><small>${trDate(i.date)} • ${i.note||''}</small></div><strong class="green-text">${money(i.amount)}</strong></div>`).join('');setHTML('homeIncomeList',rows||'<div class="empty">Ekstra gelir yok.</div>');setHTML('incomeList',rows||'<div class="empty">Ekstra gelir yok.</div>')}
@@ -37,13 +37,23 @@ function renderFinanceHome(){
   const parts=[['Aidatlar',aid,'#22c55e'],['Reklam / Bağış',ext,'#0b63ce'],['Giderler',exp,'#ef233c'],['Kalan Fon',bal,'#7c3aed']];
   drawDonut('financeHomeDonut','financeHomeTotal','financeHomeLegend',parts,total,'Toplam Fon');
 }
-function renderCriticalDebtors(){
-  const rows=data.apartments.map(a=>{
-    const debt=data.payments.filter(p=>p.apartmentId===a.id&&!p.paid).reduce((t,p)=>t+Number(p.amount||0),0);
+function getDebtors(){
+  return data.apartments.map(a=>{
+    const unpaid=data.payments.filter(p=>p.apartmentId===a.id&&!p.paid);
+    const debt=unpaid.reduce((t,p)=>t+Number(p.amount||0),0);
     const months=debtMonths(a.id);
-    return {a,debt,months};
-  }).filter(x=>x.debt>0).sort((a,b)=>b.debt-a.debt).slice(0,4);
-  setHTML('criticalDebtors', rows.map(x=>`<div class="debtor-row"><i>🔴</i><div><b>Daire ${x.a.no} - ${x.a.name}</b><small>${x.months||1} Ay Borç</small></div><strong>${money(x.debt)}</strong></div>`).join('') || '<div class="empty">Borçlu daire yok.</div>');
+    return {a,unpaid,debt,months};
+  }).filter(x=>x.debt>0).sort((a,b)=>b.debt-a.debt);
+}
+function openDebtorsModal(){
+  const rows=getDebtors();
+  const total=rows.reduce((t,x)=>t+x.debt,0);
+  const html=rows.length?`<div class="debtor-summary"><span>Toplam Borçlu Daire</span><strong>${rows.length}</strong><span>Toplam Borç</span><strong>${money(total)}</strong></div>` + rows.map(x=>`<div class="debtor-detail"><div><h3>${x.a.floor}. Kat - Daire ${x.a.no}</h3><p>${x.a.name}</p><small>${x.a.phone||'-'}</small></div><div class="debtor-amount"><b>${money(x.debt)}</b><em>${x.months||x.unpaid.length} Ay / Kalem Borç</em></div><ul>${x.unpaid.map(p=>`<li><span>${p.type} - ${p.month||'Açıklama yok'}</span><b>${money(p.amount)}</b></li>`).join('')}</ul></div>`).join(''):'<div class="empty">Borçlu daire yok.</div>';
+  showModal('Borçlu Daireler Listesi', html);
+}
+function renderCriticalDebtors(){
+  const rows=getDebtors().slice(0,4);
+  setHTML('criticalDebtors', rows.map(x=>`<div class="debtor-row" onclick="openDebtorsModal()"><i>🔴</i><div><b>Daire ${x.a.no} - ${x.a.name}</b><small>${x.months||x.unpaid.length} Ay / Kalem Borç</small></div><strong>${money(x.debt)}</strong></div>`).join('') || '<div class="empty">Borçlu daire yok.</div>');
 }
 
 function drawFundDonut(donutId,totalId,legendId){const aid=totalPaid(), ext=totalFundIncome(), exp=totalExpenses(), bal=Math.max(0,balance());const total=aid+ext+exp+bal;const parts=[['Aidatlar',aid,'#22c55e'],['Ekstra Gelirler',ext,'#0b63ce'],['Giderler',exp,'#ef233c'],['Kalan Fon',bal,'#7c3aed']];drawDonut(donutId,totalId,legendId,parts,total,'Toplam Gelir')}

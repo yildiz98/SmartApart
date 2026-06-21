@@ -14,3 +14,8 @@
 Veriler tarayıcı localStorage içinde saklanır. Güncellemeden sonra eski veri görünürse:
 1. Ctrl + F5 yapın.
 2. Gerekirse Ayarlar > Demo Verileri Sıfırla butonunu kullanın.
+
+
+## V13
+- Borçlu Daire kartına tıklanınca borçlular listesi açılır.
+- Borçlu listesinde daire, kişi, telefon, borç kalemleri ve toplam borç görünür.
