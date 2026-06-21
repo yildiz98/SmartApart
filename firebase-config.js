@@ -1,23 +1,20 @@
-// EMFE 3 SmartApart Firebase Ayarları
-// ÖNEMLİ: Bu dosyadaki projectId, Firebase Console'da kullanıcı oluşturduğun proje ile aynı olmalı.
-// Eğer Firebase Console URL'inde project/smartapart-46e77 görüyorsan, buradaki config de smartapart-46e77 projesinden alınmalı.
-
 window.EMFE3_FIREBASE = {
   enabled: true,
 
   config: {
-    apiKey: "AIzaSyCPB0AY7cRjJ-DhS0YFPF4Y0Y2ZJUsXIN0",
-    authDomain: "smartapart-ab8de.firebaseapp.com",
-    projectId: "smartapart-ab8de",
-    storageBucket: "smartapart-ab8de.firebasestorage.app",
-    messagingSenderId: "875587120223",
-    appId: "1:875587120223:web:b60b64df851fd40052ffea",
-    measurementId: "G-DKR5RHYYBX"
+    apiKey: "AIzaSyAiIHaFG2bontHJ68CQ6ZShJC7fyJDA8_w",
+    authDomain: "smartapart-46e77.firebaseapp.com",
+    databaseURL: "https://smartapart-46e77-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "smartapart-46e77",
+    storageBucket: "smartapart-46e77.firebasestorage.app",
+    messagingSenderId: "111524776914",
+    appId: "1:111524776914:web:cb042493d94a146979960b",
+    measurementId: "G-DVQD8HF36R"
   },
 
   collection: "smartapart",
   docId: "emfe3",
 
   adminEmail: "yonetim@emfe3.com",
-  adminPassword: ""
+  adminPassword: "Poh1234"
 };
