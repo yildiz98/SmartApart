@@ -1,17 +1,12 @@
-# EMFE 3 SmartApart V8
+# EMFE 3 SmartApart V9
 
-Mobil öncelikli apartman yönetim sistemi.
-
-## V8 Özellikleri
-- Görseldeki stile uygun yeni ana sayfa
-- Hoş geldiniz kartı
-- 2x2 istatistik kartları
-- Son yapılan giderler listesi
-- WhatsApp'a son giderleri gönderme
-- Aidat hatırlatma mesajı
-- Daire, ödeme, fon, gider yönetimi
-- Dış gelir / fon geliri ekleme
-- Grafikler ve fon takibi
-- GitHub Pages / PWA uyumlu
+## Güncellemeler
+- EMFE 3 Apartmanı logosu eklendi.
+- Dashboard görseldeki geniş panel tasarımına yaklaştırıldı.
+- Ekstra Gelir kartı eklendi.
+- Reklam Geliri / Bağış Geliri fon dağılımında gösterilir.
+- Asansör Bakımı örnek giderlerden çıkarıldı.
+- Aidat takip, fon yönetimi, giderler ve WhatsApp mesajları korunur.
+- GitHub Pages / PWA uyumludur.
 
 Veriler tarayıcı localStorage içinde saklanır.
