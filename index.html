@@ -10,7 +10,7 @@
   <title>EMFE 3 SmartApart</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <link rel="stylesheet" href="style.css?v=7.0" />
+  <link rel="stylesheet" href="style.css?v=8.0" />
 </head>
 <body>
   <div class="app">
@@ -58,9 +58,19 @@
       </section>
 
       <section id="payments" class="page">
-        <div class="page-head"><h2>Ödemeler</h2><button onclick="openPaymentForm()">+ Ödeme</button></div>
-        <div class="tabs"><button class="active">Bu Ay</button><button>Geçen Ay</button><button>Tüm Zamanlar</button></div>
-        <div id="paymentList" class="list"></div>
+        <div class="page-head"><h2>Aidat Takibi</h2><button onclick="openPaymentForm()">+ Ödeme</button></div>
+        <div class="aidat-hero">
+          <div class="aidat-top"><h3 id="aidatMonthTitle">Bu Ay</h3><span>Bu Ay</span></div>
+          <small>Toplam Tahsilat</small>
+          <div class="aidat-money"><strong id="aidatPaidAmount">₺0</strong><em>/ <b id="aidatTargetAmount">₺0</b></em><span id="aidatPercent">0%</span></div>
+          <div class="progress"><i id="aidatProgress"></i></div>
+        </div>
+        <div class="tabs aidat-tabs">
+          <button class="active" data-filter="all" onclick="setPaymentFilter('all')">Tümü <span id="tabAllCount">0</span></button>
+          <button data-filter="paid" onclick="setPaymentFilter('paid')">Ödendi <span id="tabPaidCount">0</span></button>
+          <button data-filter="unpaid" onclick="setPaymentFilter('unpaid')">Ödenmedi <span id="tabUnpaidCount">0</span></button>
+        </div>
+        <div id="paymentList" class="list payment-mobile-list"></div>
       </section>
 
       <section id="fund" class="page">
@@ -109,6 +119,6 @@
   </div>
 
   <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-title"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
-  <script src="app.js?v=7.0"></script>
+  <script src="app.js?v=8.0"></script>
 </body>
 </html>

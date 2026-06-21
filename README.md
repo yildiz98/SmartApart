@@ -1,8 +1,8 @@
-# EMFE 3 SmartApart V7
+# EMFE 3 SmartApart V8
 
 Mobil öncelikli apartman yönetim sistemi.
 
-## V7 Özellikleri
+## V8 Özellikleri
 - Görseldeki stile uygun yeni ana sayfa
 - Hoş geldiniz kartı
 - 2x2 istatistik kartları
