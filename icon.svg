@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="110" fill="#ffffff"/>
-  <circle cx="256" cy="256" r="218" fill="#eef6ff" stroke="#0b55c4" stroke-width="18"/>
-  <path d="M134 352V184l86-54v222" fill="#0a2d66"/>
-  <path d="M220 352V108l92 62v182" fill="#0b55c4"/>
-  <path d="M312 352V196l72-42v198" fill="#06346f"/>
-  <path d="M160 210h36v22h-36zm0 50h36v22h-36zm0 50h36v22h-36zm90-92h44v24h-44zm0 55h44v24h-44zm0 55h44v24h-44zm90-78h28v22h-28zm0 50h28v22h-28z" fill="#ffffff" opacity=".95"/>
-  <path d="M116 366h280" stroke="#061f49" stroke-width="20" stroke-linecap="round"/>
-  <text x="256" y="430" text-anchor="middle" font-family="Arial, sans-serif" font-size="58" font-weight="900" fill="#061f49">EMFE 3</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#0b4ea2"/><path d="M116 394V170l140-66 140 66v224" fill="#fff" opacity=".95"/><path d="M156 394V205h72v189M284 394V205h72v189" fill="#1e88e5"/><path d="M206 140h100v254H206z" fill="#eaf4ff"/><g fill="#0b4ea2"><rect x="228" y="168" width="20" height="28" rx="4"/><rect x="264" y="168" width="20" height="28" rx="4"/><rect x="228" y="216" width="20" height="28" rx="4"/><rect x="264" y="216" width="20" height="28" rx="4"/><rect x="228" y="264" width="20" height="28" rx="4"/><rect x="264" y="264" width="20" height="28" rx="4"/></g><text x="256" y="452" text-anchor="middle" font-family="Arial, sans-serif" font-size="58" font-weight="900" fill="#fff">EMFE 3</text></svg>
