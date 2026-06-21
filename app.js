@@ -1,99 +1,29 @@
-const KEY='emfe3_smartapart_v16_firebase';
+const KEY='emfe3_smartapart_v17_firebase';
 let paymentFilter='all';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCPB0AY7cRjJ-DhS0YFPF4Y0Y2ZJUsXIN0",
+  authDomain: "smartapart-ab8de.firebaseapp.com",
+  projectId: "smartapart-ab8de",
+  storageBucket: "smartapart-ab8de.firebasestorage.app",
+  messagingSenderId: "875587120223",
+  appId: "1:875587120223:web:b60b64df851fd40052ffea",
+  measurementId: "G-DKR5RHYYBX"
+};
+let fbApp=null, fbAuth=null, fbDb=null, fbDocRef=null, fbUnsub=null;
+let cloudReady=false, remoteLoaded=false, saveTimer=null, applyingRemote=false;
 const defaultData={manager:'Turgut Yiğit',apartments:[],payments:[],expenses:[],fundIncomes:[]};
 let data=load();
-let db=null, cloudDocRef=null, cloudReady=false, isApplyingCloud=false, cloudSaveTimer=null;
-
-function mergeData(baseData, incoming){
-  return {
-    manager: incoming?.manager || baseData.manager || 'Turgut Yiğit',
-    apartments: Array.isArray(incoming?.apartments) ? incoming.apartments : [],
-    payments: Array.isArray(incoming?.payments) ? incoming.payments : [],
-    expenses: Array.isArray(incoming?.expenses) ? incoming.expenses : [],
-    fundIncomes: Array.isArray(incoming?.fundIncomes) ? incoming.fundIncomes : []
-  };
-}
-
-function queueCloudSave(){
-  if(!cloudReady || !cloudDocRef) return;
-  clearTimeout(cloudSaveTimer);
-  cloudSaveTimer=setTimeout(async()=>{
-    try{
-      await cloudDocRef.set({
-        data: data,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, {merge:true});
-      setCloudStatus('Bulut kaydedildi');
-    }catch(err){
-      console.error('Firebase kayıt hatası:', err);
-      setCloudStatus('Bulut kayıt hatası');
-    }
-  }, 700);
-}
-
-function setCloudStatus(text){
-  const el=document.getElementById('cloudStatus');
-  if(el) el.textContent=text;
-}
-
-async function initFirebaseCloud(){
-  try{
-    const cfg=window.EMFE3_FIREBASE || {};
-    if(!cfg.enabled){
-      setCloudStatus('Yerel kayıt');
-      return;
-    }
-    if(!window.firebase || !cfg.config || !cfg.config.apiKey){
-      setCloudStatus('Firebase config eksik');
-      return;
-    }
-    if(!firebase.apps.length) firebase.initializeApp(cfg.config);
-    db=firebase.firestore();
-
-    if(firebase.auth){
-      if(cfg.adminEmail && cfg.adminPassword){
-        await firebase.auth().signInWithEmailAndPassword(cfg.adminEmail, cfg.adminPassword);
-      }else{
-        await firebase.auth().signInAnonymously();
-      }
-    }
-
-    const collectionName=cfg.collection || 'smartapart';
-    const docId=cfg.docId || 'emfe3';
-    cloudDocRef=db.collection(collectionName).doc(docId);
-    cloudReady=true;
-    setCloudStatus('Bulut bağlı');
-
-    cloudDocRef.onSnapshot(async snap=>{
-      if(snap.exists && snap.data()?.data){
-        isApplyingCloud=true;
-        data=mergeData(defaultData, snap.data().data);
-        localStorage.setItem(KEY, JSON.stringify(data));
-        render();
-        isApplyingCloud=false;
-        setCloudStatus('Bulut güncel');
-      }else{
-        await cloudDocRef.set({
-          data: data,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, {merge:true});
-        setCloudStatus('Bulut oluşturuldu');
-      }
-    }, err=>{
-      console.error('Firebase okuma hatası:', err);
-      setCloudStatus('Bulut okuma hatası');
-    });
-  }catch(err){
-    console.error('Firebase bağlantı hatası:', err);
-    setCloudStatus('Bulut bağlantı hatası');
-  }
-}
-
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(defaultData)}catch(e){return structuredClone(defaultData)}}
 function save(){
-  localStorage.setItem(KEY,JSON.stringify(data));
-  if(!isApplyingCloud) queueCloudSave();
+  localStorage.setItem(KEY, JSON.stringify(data));
+  if (cloudReady && remoteLoaded && fbDocRef && !applyingRemote) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      fbDocRef.set({...data, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true})
+        .catch(err => console.error('Firebase kayıt hatası:', err));
+    }, 350);
+  }
 }
 function money(n){return '₺ '+Number(n||0).toLocaleString('tr-TR')}
 function apt(id){return data.apartments.find(a=>a.id==id)||{floor:'-',no:'-',name:'-'}}
@@ -214,18 +144,73 @@ function closeModal(){modal.classList.add('hidden')}
 function backupData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='emfe3-yedek.json';a.click()}
 function restoreData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{data=JSON.parse(r.result);render()};r.readAsText(f)}
 function resetData(){if(confirm('Demo verilere dönülsün mü?')){localStorage.removeItem(KEY);data=structuredClone(defaultData);render()}}
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    const reg = await navigator.serviceWorker.register('./service-worker.js');
 
-    reg.update();
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    });
-
-    setInterval(() => {
-      reg.update();
-    }, 60000);
-  });
+function showLogin(message=''){
+  const login=document.getElementById('loginScreen');
+  const layout=document.querySelector('.layout');
+  if(login) login.style.display='grid';
+  if(layout) layout.style.display='none';
+  setText('loginError', message);
 }
+function showApp(){
+  const login=document.getElementById('loginScreen');
+  const layout=document.querySelector('.layout');
+  if(login) login.style.display='none';
+  if(layout) layout.style.display='grid';
+}
+async function loginAdmin(){
+  const email=document.getElementById('loginEmail')?.value.trim();
+  const password=document.getElementById('loginPassword')?.value;
+  setText('loginError','');
+  if(!fbAuth){ setText('loginError','Firebase bağlantısı yüklenemedi.'); return; }
+  try{ await fbAuth.signInWithEmailAndPassword(email,password); }
+  catch(err){ setText('loginError','Giriş başarısız: e-posta veya şifreyi kontrol edin.'); console.error(err); }
+}
+async function logoutAdmin(){ if(fbAuth) await fbAuth.signOut(); }
+function startCloudSync(user){
+  cloudReady=true; remoteLoaded=false;
+  fbDocRef=fbDb.collection('smartApartData').doc('emfe3-main');
+  if(fbUnsub) fbUnsub();
+  fbUnsub=fbDocRef.onSnapshot(async snap=>{
+    applyingRemote=true;
+    if(snap.exists){
+      const remote=snap.data() || {};
+      data={...structuredClone(defaultData), ...remote};
+      delete data.updatedAt;
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } else {
+      await fbDocRef.set({...data, createdAt: firebase.firestore.FieldValue.serverTimestamp(), owner:user.email}, {merge:true});
+    }
+    remoteLoaded=true; applyingRemote=false; showApp(); render();
+  }, err=>{ console.error(err); showLogin('Firestore bağlantısı başarısız. Kuralları ve interneti kontrol edin.'); });
+}
+function initFirebaseApp(){
+  try{
+    if(typeof firebase==='undefined') throw new Error('Firebase SDK bulunamadı');
+    fbApp=firebase.initializeApp(firebaseConfig);
+    fbAuth=firebase.auth();
+    fbDb=firebase.firestore();
+    fbAuth.onAuthStateChanged(user=>{
+      if(user){ startCloudSync(user); }
+      else { cloudReady=false; remoteLoaded=false; if(fbUnsub) fbUnsub(); showLogin(); }
+    });
+  }catch(err){ console.error(err); showLogin('Firebase başlatılamadı.'); }
+}
+function registerServiceWorker(){
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try{
+        const reg = await navigator.serviceWorker.register('./service-worker.js');
+        reg.update();
+        navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+        setInterval(() => reg.update(), 60000);
+      }catch(e){ console.warn('Service worker kurulamadı', e); }
+    });
+  }
+}
+function initApp(){
+  showLogin('');
+  initFirebaseApp();
+  registerServiceWorker();
+}
+initApp();

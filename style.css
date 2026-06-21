@@ -34,17 +34,7 @@
 .dev-badge span{font-size:12px;color:#334155;font-weight:800}.dev-badge b{font-size:13px;color:#f59e0b}.tap-hint{display:none!important}.stat.clickable{cursor:pointer;position:relative;border:1.5px solid #fecaca;background:linear-gradient(180deg,#fff,#fff7f7)}.stat.clickable:after{content:"";position:absolute;right:16px;bottom:12px;width:22px;height:22px;border-radius:50%;background:rgba(239,35,60,.08)}.stat.clickable:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(239,35,60,.14)}
 @media(max-width:900px){.dev-badge{display:none}.top-actions{display:none!important}}
 
-/* V16 Firebase bulut durum etiketi */
-.cloud-status{
-  display:inline-flex;
-  align-items:center;
-  border:1px solid #dbeafe;
-  background:#eff6ff;
-  color:#0756bf;
-  border-radius:999px;
-  padding:8px 11px;
-  font-size:12px;
-  font-weight:900;
-  white-space:nowrap;
-}
-@media(max-width:900px){.cloud-status{display:none}}
+/* V17 Firebase Login */
+.firebase-login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#061b3a,#0b63ce);padding:20px}
+.login-box{width:min(420px,100%);background:white;border-radius:24px;padding:28px;box-shadow:0 24px 70px rgba(0,0,0,.24);text-align:center}
+.login-box img{width:140px;margin-bottom:12px}.login-box h1{margin:0 0 8px;color:#061b3a}.login-box p{margin:0 0 18px;color:#64748b;font-weight:700}.login-box input{margin-bottom:10px}.login-box button{width:100%;border:0;border-radius:14px;background:#075eea;color:white;font-weight:900;padding:14px;font-size:15px}.login-box small{display:block;min-height:18px;margin-top:10px;color:#ef233c;font-weight:800}.firebase-status{font-size:12px;color:#16a34a;font-weight:900}

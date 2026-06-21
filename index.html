@@ -10,9 +10,21 @@
   <title>EMFE 3 SmartApart</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="logo.png" />
-  <link rel="stylesheet" href="style.css?v=16.0" />
+ <link rel="stylesheet" href="style.css?v=17.0" />
 </head>
 <body>
+  <section id="loginScreen" class="firebase-login">
+    <div class="login-box">
+      <img src="logo.png" alt="EMFE 3" />
+      <h1>EMFE 3 SmartApart</h1>
+      <p>Bulut kayıt sistemi için yönetici girişi yapın.</p>
+      <input id="loginEmail" type="email" value="yonetim@emfe3.com" placeholder="E-posta" autocomplete="username" />
+      <input id="loginPassword" type="password" placeholder="Şifre" autocomplete="current-password" />
+      <button onclick="loginAdmin()">Giriş Yap</button>
+      <small id="loginError"></small>
+    </div>
+  </section>
+
   <div class="layout">
     <aside class="sidebar">
       <img src="logo.png" class="side-logo" alt="EMFE 3 Apartmanı" />
@@ -32,7 +44,7 @@
       <header class="topbar">
         <button class="icon-btn" onclick="showPage('home')">☰</button>
         <div class="title-wrap"><h1 id="pageTitle">Ana Sayfa</h1><p>Yönetici Paneli</p></div>
-        <div class="top-actions"><span id="cloudStatus" class="cloud-status">Yerel kayıt</span><div class="dev-badge"><i>★</i><span>Developed by</span><b>Hüseyin Yıldız</b></div><button onclick="openWhatsapp('gider')">🟢</button><button class="bell" onclick="openWhatsapp('aidat')">🔔<span>5</span></button></div>
+        <div class="top-actions"><div class="dev-badge"><i>★</i><span>Developed by</span><b>Hüseyin Yıldız</b></div><button onclick="openWhatsapp('gider')">🟢</button><button class="bell" onclick="openWhatsapp('aidat')">🔔<span>5</span></button></div>
       </header>
 
       <main>
@@ -102,17 +114,17 @@
 
         <section id="whatsapp" class="page"><div class="wa-head"><button onclick="showPage('home')">‹</button><h2>WhatsApp'a Gönder</h2></div><label>Mesaj Türü</label><select id="waType" onchange="renderWhatsapp()"><option value="gider">Son Yapılan Giderler</option><option value="aidat">Aidat Hatırlatma</option><option value="duyuru">Genel Duyuru</option><option value="ozet">Aylık Fon Özeti</option></select><label>Mesaj Önizleme</label><div class="wa-preview" id="waPreview"></div><button class="wa-btn" onclick="shareWhatsapp()">🟢 WhatsApp'ta Paylaş</button><button class="copy-btn" onclick="copyWhatsapp()">📋 Mesajı Kopyala</button></section>
 
-        <section id="profile" class="page"><div class="profile-card"><img src="logo.png" alt="EMFE 3"><h2 id="managerNameProfile">Turgut Yiğit</h2><p>Yönetici</p><small>EMFE 3 Apartmanı</small></div><button class="settings-row" onclick="backupData()">Yedek Al</button><label class="settings-row file-row">Yedek Geri Yükle<input type="file" accept=".json" onchange="restoreData(event)"></label><button class="settings-row danger" onclick="resetData()">Demo Verileri Sıfırla</button></section>
+        <section id="profile" class="page"><div class="profile-card"><img src="logo.png" alt="EMFE 3"><h2 id="managerNameProfile">Turgut Yiğit</h2><p>Yönetici</p><small>EMFE 3 Apartmanı</small></div><button class="settings-row" onclick="backupData()">Yedek Al</button><button class="settings-row" onclick="logoutAdmin()">Çıkış Yap</button><label class="settings-row file-row">Yedek Geri Yükle<input type="file" accept=".json" onchange="restoreData(event)"></label><button class="settings-row danger" onclick="resetData()">Demo Verileri Sıfırla</button></section>
       </main>
 
       <nav class="bottom-nav"><button class="active" data-page="home" onclick="showPage('home')">🏠<span>Ana Sayfa</span></button><button data-page="apartments" onclick="showPage('apartments')">🏢<span>Daireler</span></button><button data-page="payments" onclick="showPage('payments')">💳<span>Aidat</span></button><button data-page="expenses" onclick="showPage('expenses')">📋<span>Giderler</span></button><button data-page="fund" onclick="showPage('fund')">🏦<span>Fon</span></button><button data-page="profile" onclick="showPage('profile')">👤<span>Profil</span></button></nav>
     </div>
   </div>
   <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-title"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js?v=16.0"></script>
-  <script src="app.js?v=16.0"></script>
+  <script src="app.js?v=17.0"></script>
 </body>
 </html>
