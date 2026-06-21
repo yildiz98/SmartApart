@@ -1,18 +1,20 @@
-# EMFE 3 SmartApart V4
+# EMFE 3 SmartApart V5
 
-GitHub Pages uyumlu mobil apartman yönetim sistemi.
+Mobil apartman yönetim sistemi.
 
-## Özellikler
-- Sadece yönetici paneli
-- Daire kartı: kat, daire, ad soyad, telefon, araçlar
-- Ödeme türleri: Aidat, İnternet, Ortak Gider, Diğer
-- Fon takibi: tahsilat - gider
-- Gider kartı: tür, yapılan iş, firma/kişi, tutar, tarih, açıklama
+## Yeni V5 Özellikleri
+- Daire kartında toplam borç ve kaç aylık aidat borcu görünür.
+- Ödeme kartlarında tutar ve tür detaylı görünür.
+- Fon ekranına dış gelir ekleme eklendi. Örnek: çatı reklam geliri, bağış, ek fon girişi.
+- Kalan fon hesabı: tahsilatlar + dış gelirler - giderler.
+
+## Mevcut Özellikler
+- Yönetici paneli
+- Daire ve araç takibi
+- Aidat / İnternet / Ortak Gider / Diğer ödeme kayıtları
+- Gider kartları
 - Grafikler
 - WhatsApp paylaşımı
-- Her ayın 5'i aidat hatırlatma kartı
+- Her ayın 5'inde aidat hatırlatma kartı
 - JSON yedek alma / geri yükleme
-- PWA ve GitHub Pages uyumlu
-
-## Not
-Veriler tarayıcı localStorage içinde saklanır. Firebase/bulut sonraki sürümde eklenebilir.
+- GitHub Pages ve PWA uyumlu

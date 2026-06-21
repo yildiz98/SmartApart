@@ -10,7 +10,7 @@
   <title>EMFE 3 | Apartman Yönetimi</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <link rel="stylesheet" href="style.css?v=4.0" />
+  <link rel="stylesheet" href="style.css?v=5.0" />
 </head>
 <body>
   <div class="app-shell">
@@ -48,9 +48,9 @@
       </section>
 
       <section id="fund" class="page">
-        <div class="section-head"><h2>Fon</h2><button onclick="shareMonthlySummary()">WP Özet</button></div>
-        <div class="fund-card"><small>Kalan Fon</small><strong id="fundBalance">₺0</strong><span>Toplanan tahsilat - giderler</span></div>
-        <div class="stats" id="fundStats"></div>
+        <div class="section-head"><h2>Fon</h2><button onclick="openIncomeForm()">+ Fon Geliri</button></div><button class="wide-soft" onclick="shareMonthlySummary()">📲 WP Aylık Özet</button>
+        <div class="fund-card"><small>Kalan Fon</small><strong id="fundBalance">₺0</strong><span>Tahsilatlar + dış gelirler - giderler</span></div>
+        <div class="stats" id="fundStats"></div><div class="section-head compact"><h3>Dış Fon Gelirleri</h3><button onclick="openIncomeForm()">+ Ekle</button></div><div id="externalIncomeList" class="list"></div>
       </section>
 
       <section id="expenses" class="page">
@@ -83,6 +83,6 @@
   </div>
 
   <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
-  <script src="app.js?v=4.0"></script>
+  <script src="app.js?v=5.0"></script>
 </body>
 </html>
