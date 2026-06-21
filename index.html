@@ -1,33 +1,114 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#061b3a"><meta name="apple-mobile-web-app-capable" content="yes">
-<title>EMFE 3 SmartApart V6</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css?v=6.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#061b3a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="EMFE 3" />
+  <title>EMFE 3 SmartApart</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="style.css?v=7.0" />
 </head>
 <body>
-<div class="app">
-<header class="top"><button class="ghost" onclick="toggleLogin()">☰</button><div><h1>EMFE 3</h1><p>SmartApart Yönetici Paneli</p></div><button class="bell" onclick="showPage('announcements')">🔔<b>5</b></button></header>
-<main>
-<section id="login" class="login hidden"><div class="logo">E3</div><h2>Yönetici Girişi</h2><p>Sisteme sadece yönetici erişimi vardır.</p><button onclick="login()" class="primary">Yönetici Girişi</button></section>
-<section id="dashboard" class="page active">
- <div class="hero"><div><small>Hoş geldiniz</small><h2>EMFE 3 Apartmanı</h2><p>Fon, gider, aidat ve borç takibi</p></div><div class="building">🏢</div></div>
- <div class="stats" id="stats"></div>
- <div id="reminderCard"></div>
- <div class="card chart-card"><div class="head"><h3>Gelir - Gider</h3><select id="monthSelect" onchange="renderAll()"><option>Haziran 2026</option><option>Mayıs 2026</option><option>Nisan 2026</option></select></div><div class="two"><div class="soft green"><small>Toplam Gelir</small><b id="incomeTotal">₺0</b></div><div class="soft red"><small>Toplam Gider</small><b id="expenseTotal">₺0</b></div></div><div class="donut-wrap"><div class="donut" id="donut"><span id="donutCenter">₺0<br><small>Toplam Gider</small></span></div><div class="legend" id="legend"></div></div></div>
- <div class="card"><div class="head"><h3>Son İşlemler</h3><button onclick="showPage('fund')">Tümü ›</button></div><div id="recent"></div></div>
- <div class="card danger-light"><div class="head"><h3>Borçlu Daireler</h3><button onclick="showPage('payments')">Tümü ›</button></div><div id="debtors"></div></div>
-</section>
-<section id="apartments" class="page"><div class="head"><h2>Daireler</h2><button class="mini" onclick="apartmentForm()">+ Daire</button></div><input id="search" placeholder="Daire veya isim ara..." oninput="renderApartments()"><div id="apartmentList"></div></section>
-<section id="vehicles" class="page"><div class="head"><h2>Araçlar</h2><button class="mini" onclick="vehicleForm()">+ Araç</button></div><div id="vehicleList"></div></section>
-<section id="payments" class="page"><div class="head"><h2>Ödemeler</h2><button class="mini" onclick="paymentForm()">+ Borç</button></div><div class="tabs"><button onclick="payFilter='all';renderPayments()">Tümü</button><button onclick="payFilter='paid';renderPayments()">Ödenen</button><button onclick="payFilter='unpaid';renderPayments()">Borçlu</button></div><div id="paymentList"></div></section>
-<section id="fund" class="page"><div class="head"><h2>Fon</h2><button class="mini" onclick="incomeForm()">+ Dış Gelir</button></div><div class="stats one" id="fundStats"></div><div class="card"><h3>Fon Durumu Grafiği</h3><div class="bars" id="fundBars"></div></div><div class="card"><h3>Fon Gelirleri</h3><div id="incomeList"></div></div></section>
-<section id="expenses" class="page"><div class="head"><h2>Giderler</h2><button class="mini" onclick="expenseForm()">+ Gider</button></div><div id="expenseList"></div></section>
-<section id="graphs" class="page"><div class="head"><h2>Grafikler</h2></div><div class="card"><h3>Aylık Tahsilat</h3><div class="linechart" id="incomeChart"></div></div><div class="card"><h3>Aylık Gider</h3><div class="linechart redline" id="expenseChart"></div></div><div class="card"><h3>Aidat Durumu</h3><div class="donut big" id="paymentDonut"><span id="payCenter"></span></div></div></section>
-<section id="announcements" class="page"><div class="head"><h2>Duyurular</h2></div><div class="card"><h3>WhatsApp Aidat Hatırlatma</h3><textarea id="waText"></textarea><button class="primary" onclick="shareWa()">WhatsApp'ta Paylaş</button></div><div class="card"><h3>Aylık Özet</h3><textarea id="waSummary"></textarea><button class="secondary" onclick="shareSummary()">Özeti Paylaş</button></div></section>
-</main>
-<nav><button class="active" data-page="dashboard">🏠<span>Panel</span></button><button data-page="apartments">🏢<span>Daire</span></button><button data-page="payments">💰<span>Ödeme</span></button><button data-page="fund">🏦<span>Fon</span></button><button data-page="expenses">🧾<span>Gider</span></button><button data-page="graphs">📊<span>Grafik</span></button></nav>
-</div>
-<div id="modal" class="modal hidden"><div class="box"><div class="head"><h3 id="mt"></h3><button onclick="closeModal()">✕</button></div><div id="mb"></div></div></div>
-<script src="app.js?v=6.0"></script>
-</body></html>
+  <div class="app">
+    <header class="topbar">
+      <button class="icon-btn" onclick="showPage('home')">☰</button>
+      <div><h1>EMFE 3</h1><p>Yönetici Paneli</p></div>
+      <button class="icon-btn bell" onclick="openWhatsapp('aidat')">🔔<span>5</span></button>
+    </header>
+
+    <main>
+      <section id="home" class="page active">
+        <div class="hero">
+          <div><small>Hoş geldiniz,</small><h2 id="managerNameHero">Ahmet Yılmaz</h2><p>Yönetici</p></div>
+          <div class="building">🏢</div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="big-card blue-money">
+          <div><span>Bu Ay Toplanan Aidat</span><strong id="monthlyIncome">₺0</strong></div>
+          <em>+14%<small>Geçen aya göre</small></em>
+        </div>
+
+        <div class="big-card" onclick="showPage('fund')">
+          <div><span>Kasa Durumu</span><strong id="fundBalance">₺0</strong></div><b>💼</b>
+        </div>
+
+        <div class="section-row"><h3>Son Yapılan Giderler</h3><button onclick="showPage('expenses')">Tümü ›</button></div>
+        <div class="list-card" id="recentExpenses"></div>
+
+        <div class="quick-card">
+          <h3>WhatsApp ile Hızlı İşlemler</h3>
+          <div class="quick-grid">
+            <button onclick="openWhatsapp('aidat')"><i>🟢</i>Aidat Hatırlatma<br><span>Gönder</span></button>
+            <button onclick="openWhatsapp('duyuru')"><i>📢</i>Duyuru<br><span>Gönder</span></button>
+            <button onclick="openWhatsapp('gider')"><i>🧾</i>Son Giderleri<br><span>Gönder</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="apartments" class="page">
+        <div class="page-head"><h2>Daireler</h2><button onclick="openApartmentForm()">+ Daire</button></div>
+        <input id="searchApt" class="search" placeholder="Daire veya isim ara..." oninput="renderApartments()" />
+        <div id="apartmentList" class="list"></div>
+      </section>
+
+      <section id="payments" class="page">
+        <div class="page-head"><h2>Ödemeler</h2><button onclick="openPaymentForm()">+ Ödeme</button></div>
+        <div class="tabs"><button class="active">Bu Ay</button><button>Geçen Ay</button><button>Tüm Zamanlar</button></div>
+        <div id="paymentList" class="list"></div>
+      </section>
+
+      <section id="fund" class="page">
+        <div class="page-head"><h2>Fon</h2><button onclick="openFundIncomeForm()">+ Dış Gelir</button></div>
+        <div class="fund-summary" id="fundSummary"></div>
+        <div class="chart-card"><h3>Fon Durumu</h3><div class="bar-chart" id="fundBars"></div></div>
+        <div class="list-card" id="fundIncomeList"></div>
+      </section>
+
+      <section id="expenses" class="page">
+        <div class="page-head"><h2>Giderler</h2><button onclick="openExpenseForm()">+ Gider</button></div>
+        <div class="chart-card"><h3>Gider Dağılımı</h3><div class="donut-wrap"><div class="donut" id="expenseDonut"><span id="expenseDonutTotal">₺0<br><small>Toplam Gider</small></span></div><div id="expenseLegend" class="legend"></div></div></div>
+        <div id="expenseList" class="list"></div>
+      </section>
+
+      <section id="whatsapp" class="page">
+        <div class="wa-head"><button onclick="showPage('home')">‹</button><h2>WhatsApp'a Gönder</h2></div>
+        <label>Mesaj Türü</label>
+        <select id="waType" onchange="renderWhatsapp()">
+          <option value="gider">Son Yapılan Giderler</option>
+          <option value="aidat">Aidat Hatırlatma</option>
+          <option value="duyuru">Genel Duyuru</option>
+          <option value="ozet">Aylık Özet</option>
+        </select>
+        <label>Mesaj Önizleme</label>
+        <div class="wa-preview" id="waPreview"></div>
+        <button class="wa-btn" onclick="shareWhatsapp()">🟢 WhatsApp'ta Paylaş</button>
+        <button class="copy-btn" onclick="copyWhatsapp()">📋 Mesajı Kopyala</button>
+      </section>
+
+      <section id="profile" class="page">
+        <div class="profile-card"><div class="avatar">👤</div><h2 id="managerNameProfile">Ahmet Yılmaz</h2><p>Yönetici</p><small>EMFE 3 Apartmanı</small></div>
+        <button class="settings-row" onclick="backupData()">Yedek Al</button>
+        <label class="settings-row file-row">Yedek Geri Yükle<input type="file" accept=".json" onchange="restoreData(event)"></label>
+        <button class="settings-row danger" onclick="resetData()">Demo Verileri Sıfırla</button>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active" data-page="home" onclick="showPage('home')">🏠<span>Ana Sayfa</span></button>
+      <button data-page="apartments" onclick="showPage('apartments')">🏢<span>Daireler</span></button>
+      <button data-page="payments" onclick="showPage('payments')">💳<span>Ödemeler</span></button>
+      <button data-page="expenses" onclick="showPage('expenses')">📋<span>Giderler</span></button>
+      <button data-page="profile" onclick="showPage('profile')">👤<span>Profil</span></button>
+    </nav>
+  </div>
+
+  <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-title"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+  <script src="app.js?v=7.0"></script>
+</body>
+</html>

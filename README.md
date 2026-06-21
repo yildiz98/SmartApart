@@ -1,20 +1,17 @@
-# EMFE 3 SmartApart V6
+# EMFE 3 SmartApart V7
 
-Mobil apartman yönetim sistemi.
+Mobil öncelikli apartman yönetim sistemi.
 
-## V6 Özellikleri
-- Gönderilen örneğe yakın modern grafik ekranı
-- Gelir / gider donut grafiği
-- Aylık tahsilat ve gider çizgi grafikleri
-- Aidat durumu donut grafiği
-- Fon durumu bar grafiği
-- Borçlu daire listesi
-- Kaç aylık aidat borcu görünümü
-- Fona dış gelir ekleme
-- Gider kartları
-- WhatsApp aidat hatırlatma ve aylık özet paylaşımı
-- Her ayın 5'i aidat hatırlatma kartı
+## V7 Özellikleri
+- Görseldeki stile uygun yeni ana sayfa
+- Hoş geldiniz kartı
+- 2x2 istatistik kartları
+- Son yapılan giderler listesi
+- WhatsApp'a son giderleri gönderme
+- Aidat hatırlatma mesajı
+- Daire, ödeme, fon, gider yönetimi
+- Dış gelir / fon geliri ekleme
+- Grafikler ve fon takibi
+- GitHub Pages / PWA uyumlu
 
-## Kurulum
-Dosyaları GitHub reposuna yükleyin ve GitHub Pages'i açın.
-Güncellemeden sonra Ctrl + F5 yapın.
+Veriler tarayıcı localStorage içinde saklanır.
