@@ -1,9 +1,100 @@
-const KEY='emfe3_smartapart_v13_clean';
+const KEY='emfe3_smartapart_v16_firebase';
 let paymentFilter='all';
 const defaultData={manager:'Turgut Yiğit',apartments:[],payments:[],expenses:[],fundIncomes:[]};
 let data=load();
+let db=null, cloudDocRef=null, cloudReady=false, isApplyingCloud=false, cloudSaveTimer=null;
+
+function mergeData(baseData, incoming){
+  return {
+    manager: incoming?.manager || baseData.manager || 'Turgut Yiğit',
+    apartments: Array.isArray(incoming?.apartments) ? incoming.apartments : [],
+    payments: Array.isArray(incoming?.payments) ? incoming.payments : [],
+    expenses: Array.isArray(incoming?.expenses) ? incoming.expenses : [],
+    fundIncomes: Array.isArray(incoming?.fundIncomes) ? incoming.fundIncomes : []
+  };
+}
+
+function queueCloudSave(){
+  if(!cloudReady || !cloudDocRef) return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(async()=>{
+    try{
+      await cloudDocRef.set({
+        data: data,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true});
+      setCloudStatus('Bulut kaydedildi');
+    }catch(err){
+      console.error('Firebase kayıt hatası:', err);
+      setCloudStatus('Bulut kayıt hatası');
+    }
+  }, 700);
+}
+
+function setCloudStatus(text){
+  const el=document.getElementById('cloudStatus');
+  if(el) el.textContent=text;
+}
+
+async function initFirebaseCloud(){
+  try{
+    const cfg=window.EMFE3_FIREBASE || {};
+    if(!cfg.enabled){
+      setCloudStatus('Yerel kayıt');
+      return;
+    }
+    if(!window.firebase || !cfg.config || !cfg.config.apiKey){
+      setCloudStatus('Firebase config eksik');
+      return;
+    }
+    if(!firebase.apps.length) firebase.initializeApp(cfg.config);
+    db=firebase.firestore();
+
+    if(firebase.auth){
+      if(cfg.adminEmail && cfg.adminPassword){
+        await firebase.auth().signInWithEmailAndPassword(cfg.adminEmail, cfg.adminPassword);
+      }else{
+        await firebase.auth().signInAnonymously();
+      }
+    }
+
+    const collectionName=cfg.collection || 'smartapart';
+    const docId=cfg.docId || 'emfe3';
+    cloudDocRef=db.collection(collectionName).doc(docId);
+    cloudReady=true;
+    setCloudStatus('Bulut bağlı');
+
+    cloudDocRef.onSnapshot(async snap=>{
+      if(snap.exists && snap.data()?.data){
+        isApplyingCloud=true;
+        data=mergeData(defaultData, snap.data().data);
+        localStorage.setItem(KEY, JSON.stringify(data));
+        render();
+        isApplyingCloud=false;
+        setCloudStatus('Bulut güncel');
+      }else{
+        await cloudDocRef.set({
+          data: data,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, {merge:true});
+        setCloudStatus('Bulut oluşturuldu');
+      }
+    }, err=>{
+      console.error('Firebase okuma hatası:', err);
+      setCloudStatus('Bulut okuma hatası');
+    });
+  }catch(err){
+    console.error('Firebase bağlantı hatası:', err);
+    setCloudStatus('Bulut bağlantı hatası');
+  }
+}
+
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(defaultData)}catch(e){return structuredClone(defaultData)}}
-function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(data));
+  if(!isApplyingCloud) queueCloudSave();
+}
 function money(n){return '₺ '+Number(n||0).toLocaleString('tr-TR')}
 function apt(id){return data.apartments.find(a=>a.id==id)||{floor:'-',no:'-',name:'-'}}
 function totalPaid(){return data.payments.filter(p=>p.paid).reduce((t,p)=>t+Number(p.amount||0),0)}

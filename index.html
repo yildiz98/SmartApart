@@ -10,8 +10,7 @@
   <title>EMFE 3 SmartApart</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="logo.png" />
- <link rel="stylesheet" href="style.css?v=16.0" />
-<script src="app.js?v=16.0"></script>
+  <link rel="stylesheet" href="style.css?v=16.0" />
 </head>
 <body>
   <div class="layout">
@@ -33,7 +32,7 @@
       <header class="topbar">
         <button class="icon-btn" onclick="showPage('home')">☰</button>
         <div class="title-wrap"><h1 id="pageTitle">Ana Sayfa</h1><p>Yönetici Paneli</p></div>
-        <div class="top-actions"><div class="dev-badge"><i>★</i><span>Developed by</span><b>Hüseyin Yıldız</b></div><button onclick="openWhatsapp('gider')">🟢</button><button class="bell" onclick="openWhatsapp('aidat')">🔔<span>5</span></button></div>
+        <div class="top-actions"><span id="cloudStatus" class="cloud-status">Yerel kayıt</span><div class="dev-badge"><i>★</i><span>Developed by</span><b>Hüseyin Yıldız</b></div><button onclick="openWhatsapp('gider')">🟢</button><button class="bell" onclick="openWhatsapp('aidat')">🔔<span>5</span></button></div>
       </header>
 
       <main>
@@ -110,6 +109,10 @@
     </div>
   </div>
   <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-title"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
-  <script src="app.js?v=15.0"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js?v=16.0"></script>
+  <script src="app.js?v=16.0"></script>
 </body>
 </html>
