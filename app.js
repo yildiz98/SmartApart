@@ -1,6 +1,6 @@
-const KEY='emfe3_smartapart_v11';
+const KEY='emfe3_smartapart_v12_clean';
 let paymentFilter='all';
-const defaultData={manager:'Ahmet Yılmaz',apartments:[{id:1,floor:'1',no:'1',name:'Ahmet Yılmaz',phone:'0555 111 22 33',vehicles:['33 ABC 123']},{id:2,floor:'1',no:'2',name:'Ayşe Demir',phone:'0555 222 33 44',vehicles:['33 XYZ 456']},{id:3,floor:'1',no:'3',name:'Mehmet Kaya',phone:'0555 333 44 55',vehicles:['07 KLM 789']},{id:4,floor:'2',no:'4',name:'Fatma Şahin',phone:'0555 444 55 66',vehicles:[]}],payments:[{id:1,apartmentId:1,type:'Aidat',amount:1200,month:'Haziran 2026',paid:true,date:'2026-06-05'},{id:2,apartmentId:2,type:'Aidat',amount:1200,month:'Haziran 2026',paid:true,date:'2026-06-07'},{id:3,apartmentId:3,type:'Aidat',amount:1200,month:'Haziran 2026',paid:false,date:''},{id:4,apartmentId:3,type:'Aidat',amount:1200,month:'Mayıs 2026',paid:false,date:''},{id:5,apartmentId:4,type:'İnternet',amount:350,month:'Haziran 2026',paid:false,date:''}],expenses:[{id:1,type:'Temizlik',job:'Merdiven Temizliği',person:'ABC Temizlik',amount:2500,date:'2026-06-15',note:'Apartman ortak alanları temizlendi.'},{id:2,type:'Bahçe',job:'Bahçe Düzenleme',person:'Bahçıvan',amount:1500,date:'2026-06-05',note:'Bahçe bakımı yapıldı.'},{id:3,type:'Diğer',job:'Elektrik Gideri',person:'Kurum',amount:2350,date:'2026-06-02',note:'Ortak alan elektrik gideri.'},{id:4,type:'Temizlik',job:'Çöp Alanı Temizliği',person:'Temizlik Personeli',amount:1000,date:'2026-06-01',note:'Ortak çöp alanı temizlendi.'}],fundIncomes:[{id:1,title:'Reklam Geliri',amount:6000,date:'2026-06-07',note:'Çatı reklam alanı geliri.'},{id:2,title:'Bağış Geliri',amount:2350,date:'2026-06-18',note:'Apartman fonuna bağış.'}]};
+const defaultData={manager:'Turgut Yiğit',apartments:[],payments:[],expenses:[],fundIncomes:[]};
 let data=load();
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(defaultData)}catch(e){return structuredClone(defaultData)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(data))}
@@ -20,9 +20,9 @@ function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.
 function render(){setText('managerNameHero',data.manager);setText('managerNameProfile',data.manager);renderStats();renderRecentExpenses();renderIncomes();renderApartments();renderPayments();renderFund();renderExpenses();renderCriticalDebtors();save()}
 function renderStats(){const occupied=data.apartments.length;const debtors=data.apartments.filter(a=>data.payments.some(p=>p.apartmentId===a.id&&!p.paid)).length;const stats=[['🏢','Toplam Daire',occupied,'Daire'],['✅','Dolu Daire',occupied,'Daire'],['👤','Kiracı Sayısı',occupied,'Kişi'],['🔴','Borçlu Daire',debtors,'Daire']];setHTML('statsGrid',stats.map(s=>`<div class="stat"><i>${s[0]}</i><div><span>${s[1]}</span><strong>${s[2]}</strong><small>${s[3]}</small></div></div>`).join(''));setText('monthlyIncome',money(totalPaid()));setText('fundBalance',money(balance()));setText('extraIncomeTotal',money(totalFundIncome()));setText('debtTotalHome',money(totalDebt()));setHTML('extraIncomeBreakdown',data.fundIncomes.slice(0,2).map(i=>`<b>• ${i.title}: ${money(i.amount)}</b>`).join(''))}
 function expenseIcon(t){return t==='Temizlik'?'🧹':t==='Bahçe'?'🌳':t==='Bakım'?'🛠️':'⚡'}
-function renderRecentExpenses(){setHTML('recentExpenses',data.expenses.slice(0,4).map(e=>`<div class="row"><i>${expenseIcon(e.type)}</i><div><b>${e.job}</b><small>${trDate(e.date)}</small></div><strong class="red-text">${money(e.amount)}</strong><button>›</button></div>`).join(''))}
+function renderRecentExpenses(){const rows=data.expenses.slice(0,4).map(e=>`<div class="row"><i>${expenseIcon(e.type)}</i><div><b>${e.job}</b><small>${trDate(e.date)}</small></div><strong class="red-text">${money(e.amount)}</strong><button>›</button></div>`).join('');setHTML('recentExpenses',rows||'<div class="empty">Henüz gider kaydı yok.</div>')}
 function renderIncomes(){const rows=data.fundIncomes.map(i=>`<div class="row"><i>💰</i><div><b>${i.title}</b><small>${trDate(i.date)} • ${i.note||''}</small></div><strong class="green-text">${money(i.amount)}</strong></div>`).join('');setHTML('homeIncomeList',rows||'<div class="empty">Ekstra gelir yok.</div>');setHTML('incomeList',rows||'<div class="empty">Ekstra gelir yok.</div>')}
-function renderApartments(){const q=(document.getElementById('searchApt')?.value||'').toLowerCase();setHTML('apartmentList',data.apartments.filter(a=>(a.no+a.name+a.phone+a.floor).toLowerCase().includes(q)).map(a=>{const debt=data.payments.filter(p=>p.apartmentId===a.id&&!p.paid).reduce((t,p)=>t+p.amount,0);const months=debtMonths(a.id);return `<div class="card apt-card ${debt?'debt':''}" onclick="openApartmentForm(${a.id})"><h3>${a.floor}. Kat - Daire ${a.no}</h3><p>${a.name}</p><small>${a.phone}</small><div class="car-tags">${a.vehicles.map(v=>`<span>${v}</span>`).join('')||'<span>Araç yok</span>'}</div><div class="apt-bottom"><b>${debt?money(debt):'Borç Yok'}</b><em>${months?months+' Aylık Aidat Borcu':'Ödendi'}</em></div></div>`}).join(''))}
+function renderApartments(){const q=(document.getElementById('searchApt')?.value||'').toLowerCase();const rows=data.apartments.filter(a=>(a.no+a.name+a.phone+a.floor).toLowerCase().includes(q)).map(a=>{const debt=data.payments.filter(p=>p.apartmentId===a.id&&!p.paid).reduce((t,p)=>t+p.amount,0);const months=debtMonths(a.id);return `<div class="card apt-card ${debt?'debt':''}" onclick="openApartmentForm(${a.id})"><h3>${a.floor}. Kat - Daire ${a.no}</h3><p>${a.name}</p><small>${a.phone}</small><div class="car-tags">${a.vehicles.map(v=>`<span>${v}</span>`).join('')||'<span>Araç yok</span>'}</div><div class="apt-bottom"><b>${debt?money(debt):'Borç Yok'}</b><em>${months?months+' Aylık Aidat Borcu':'Ödendi'}</em></div></div>`}).join('');setHTML('apartmentList',rows||'<div class="card empty">Henüz daire kaydı yok. + Daire butonundan ilk kaydı oluşturun.</div>')}
 function renderPayments(){const all=data.payments;const paid=all.filter(p=>p.paid);const unpaid=all.filter(p=>!p.paid);const paidSum=paid.reduce((t,p)=>t+p.amount,0);const target=all.reduce((t,p)=>t+p.amount,0);const pct=target?Math.round(paidSum/target*100):0;const month=new Date().toLocaleDateString('tr-TR',{month:'long',year:'numeric'});['aidatMonthTitle','aidatMonthTitleHome'].forEach(id=>setText(id,month));['aidatPaidAmount','aidatPaidAmountHome'].forEach(id=>setText(id,money(paidSum)));['aidatTargetAmount','aidatTargetAmountHome'].forEach(id=>setText(id,money(target)));['aidatPercent','aidatPercentHome'].forEach(id=>setText(id,'%'+pct));['aidatProgress','aidatProgressHome'].forEach(id=>{const el=document.getElementById(id); if(el) el.style.width=pct+'%'});setText('tabAllCount','('+all.length+')');setText('tabPaidCount','('+paid.length+')');setText('tabUnpaidCount','('+unpaid.length+')');document.querySelectorAll('.aidat-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.filter===paymentFilter));let list=all.filter(p=>paymentFilter==='all'||(paymentFilter==='paid'?p.paid:!p.paid));setHTML('paymentList',list.map(p=>{const a=apt(p.apartmentId);return `<div class="aidat-item ${p.paid?'is-paid':'is-unpaid'}"><div class="aidat-info"><h3>${a.floor}. Kat - Daire ${a.no}</h3><p>${a.name}</p><strong>${p.type} • ${money(p.amount)}</strong><small>${p.month}</small></div><div class="aidat-state"><span>${p.paid?'Ödendi':'Ödenmedi'}</span><small>${p.paid?'Ödeme: '+trDate(p.date):'Bekliyor'}</small><button onclick="togglePayment(${p.id})">›</button></div></div>`}).join('')||'<div class="card">Bu sekmede kayıt yok.</div>')}
 function setPaymentFilter(f){paymentFilter=f;renderPayments()}
 function renderFund(){const summary=[['Toplanan Aidatlar',totalPaid(),'green'],['Ekstra Gelirler',totalFundIncome(),'blue'],['Toplam Giderler',totalExpenses(),'red'],['Kalan Fon',balance(),'navy']];setHTML('fundSummary',summary.map(i=>`<div class="fund-box ${i[2]}"><span>${i[0]}</span><strong>${money(i[1])}</strong></div>`).join(''));renderFinanceHome();drawFundDonut('fundPageDonut','fundPageDonutTotal','fundPageLegend')}
@@ -47,18 +47,60 @@ function renderCriticalDebtors(){
 }
 
 function drawFundDonut(donutId,totalId,legendId){const aid=totalPaid(), ext=totalFundIncome(), exp=totalExpenses(), bal=Math.max(0,balance());const total=aid+ext+exp+bal;const parts=[['Aidatlar',aid,'#22c55e'],['Ekstra Gelirler',ext,'#0b63ce'],['Giderler',exp,'#ef233c'],['Kalan Fon',bal,'#7c3aed']];drawDonut(donutId,totalId,legendId,parts,total,'Toplam Gelir')}
-function renderExpenses(){const by={};data.expenses.forEach(e=>by[e.type]=(by[e.type]||0)+Number(e.amount||0));const parts=Object.entries(by).map(([k,v],idx)=>[k,v,['#2563eb','#22c55e','#f59e0b','#7c3aed','#ef4444'][idx%5]]);drawDonut('expenseDonut','expenseDonutTotal','expenseLegend',parts,totalExpenses(),'Toplam Gider');drawDonut('expenseDonutSmall','expenseDonutSmallTotal','expenseLegendSmall',parts,totalExpenses(),'Toplam Gider');setHTML('expenseList',data.expenses.map(e=>`<div class="card expense-card"><h3>${expenseIcon(e.type)} ${e.job}</h3><p>${e.person}</p><small>${trDate(e.date)} • ${e.note||''}</small><strong>${money(e.amount)}</strong></div>`).join(''))}
+function renderExpenses(){const by={};data.expenses.forEach(e=>by[e.type]=(by[e.type]||0)+Number(e.amount||0));const parts=Object.entries(by).map(([k,v],idx)=>[k,v,['#2563eb','#22c55e','#f59e0b','#7c3aed','#ef4444'][idx%5]]);drawDonut('expenseDonut','expenseDonutTotal','expenseLegend',parts,totalExpenses(),'Toplam Gider');drawDonut('expenseDonutSmall','expenseDonutSmallTotal','expenseLegendSmall',parts,totalExpenses(),'Toplam Gider');setHTML('expenseList',data.expenses.map(e=>`<div class="card expense-card"><h3>${expenseIcon(e.type)} ${e.job}</h3><p>${e.person}</p><small>${trDate(e.date)} • ${e.note||''}</small><strong>${money(e.amount)}</strong></div>`).join('')||'<div class="card empty">Henüz gider kaydı yok.</div>')}
 function drawDonut(donutId,totalId,legendId,parts,total,label){const d=document.getElementById(donutId); if(!d) return; let start=0;const seg=parts.map(([k,v,c])=>{const deg=total?Number(v)/total*360:0;const s=`${c} ${start}deg ${start+deg}deg`;start+=deg;return s}).join(',');d.style.background=`conic-gradient(${seg||'#e5e7eb 0 360deg'})`;setHTML(totalId,`${money(total)}<br><small>${label}</small>`);setHTML(legendId,parts.map(([k,v,c])=>`<p><i style="background:${c}"></i>${k}<b>${money(v)}</b></p>`).join(''))}
 function togglePayment(id){const p=data.payments.find(x=>x.id===id);p.paid=!p.paid;p.date=p.paid?new Date().toISOString().slice(0,10):'';render()}
 function openWhatsapp(type='gider'){showPage('whatsapp');document.getElementById('waType').value=type;renderWhatsapp()}
-function makeMsg(){const type=document.getElementById('waType')?.value||'gider';if(type==='gider'){return `📋 EMFE 3 Apartmanı\n\nDeğerli sakinlerimiz,\n\nAşağıda son yapılan giderleri bilgilerinize sunarız.\n\n${data.expenses.slice(0,5).map(e=>`${expenseIcon(e.type)} ${e.job}\n${trDate(e.date)} - ${money(e.amount)}`).join('\n\n')}\n\nBilgilerinize sunarız.\nYönetim`}
-if(type==='aidat'){const debtors=data.apartments.filter(a=>data.payments.some(p=>p.apartmentId===a.id&&!p.paid));return `📢 EMFE 3 Apartmanı\n\nDeğerli sakinlerimiz,\n\nHer ayın 5'i aidat hatırlatma günüdür. Aidat ödemesi bekleyen dairelerimizin ödemelerini yapmasını rica ederiz.\n\nBorçlu Daire Sayısı: ${debtors.length}\nToplam Borç: ${money(totalDebt())}\n\nYönetim`}
-if(type==='ozet'){return `📊 EMFE 3 Apartmanı Fon Özeti\n\nToplanan Aidatlar: ${money(totalPaid())}\nEkstra Gelirler: ${money(totalFundIncome())}\nToplam Giderler: ${money(totalExpenses())}\nKalan Fon: ${money(balance())}\nBorçlu Daire Sayısı: ${data.apartments.filter(a=>data.payments.some(p=>p.apartmentId===a.id&&!p.paid)).length}\n\nYönetim`}
-return `📢 EMFE 3 Apartmanı\n\nDeğerli sakinlerimiz,\n\nBilgilendirme mesajıdır.\n\nYönetim`}
+function makeMsg(){const type=document.getElementById('waType')?.value||'gider';
+if(type==='gider'){return `🏢 EMFE 3 APARTMANI
+
+Değerli sakinlerimiz,
+
+Aşağıda son yapılan giderler bilgilerinize sunulmuştur.
+
+${data.expenses.slice(0,5).map(e=>`${expenseIcon(e.type)} ${e.job}
+📅 ${trDate(e.date)}
+💰 ${money(e.amount)}`).join('\n\n')}
+
+📢 Bilgilerinize sunarız.
+
+👨‍💼 Apartman Yönetimi
+EMFE 3 Apartmanı`}
+if(type==='aidat'){const debtors=data.apartments.filter(a=>data.payments.some(p=>p.apartmentId===a.id&&!p.paid));return `🏢 EMFE 3 APARTMANI
+
+🔔 Aidat Hatırlatma
+
+Değerli sakinlerimiz,
+
+Aidat ödemesi bekleyen dairelerimizin ödemelerini yapmalarını rica ederiz.
+
+📊 Borçlu Daire Sayısı: ${debtors.length}
+💰 Toplam Borç: ${money(totalDebt())}
+
+👨‍💼 Apartman Yönetimi`}
+if(type==='ozet'){return `🏢 EMFE 3 APARTMANI
+
+📊 Aylık Fon Özeti
+
+💳 Toplanan Aidatlar: ${money(totalPaid())}
+💰 Ekstra Gelirler: ${money(totalFundIncome())}
+📉 Toplam Giderler: ${money(totalExpenses())}
+🏦 Kalan Fon: ${money(balance())}
+
+👨‍💼 Apartman Yönetimi`}
+return `🏢 EMFE 3 APARTMANI
+
+📢 Genel Duyuru
+
+Değerli sakinlerimiz,
+
+Bilgilendirme mesajıdır.
+
+👨‍💼 Apartman Yönetimi`}
 function renderWhatsapp(){setText('waPreview',makeMsg())}
 function shareWhatsapp(){window.open('https://wa.me/?text='+encodeURIComponent(makeMsg()),'_blank')}
 async function copyWhatsapp(){await navigator.clipboard.writeText(makeMsg());alert('Mesaj kopyalandı')}
-function openPaymentForm(){const opts=data.apartments.map(a=>`<option value="${a.id}">${a.floor}. Kat - Daire ${a.no} - ${a.name}</option>`).join('');showModal('Ödeme Ekle',`<select id="pApt">${opts}</select><select id="pType"><option>Aidat</option><option>İnternet</option><option>Ortak Gider</option><option>Diğer</option></select><input id="pMonth" placeholder="Ay / Açıklama" value="Haziran 2026"><input id="pAmount" type="number" placeholder="Tutar"><select id="pPaid"><option value="false">Bekliyor</option><option value="true">Tahsil Edildi</option></select><button class="save" onclick="savePayment()">Kaydet</button>`)}
+function openPaymentForm(){if(!data.apartments.length){alert('Önce daire kaydı ekleyin.');return;}const opts=data.apartments.map(a=>`<option value="${a.id}">${a.floor}. Kat - Daire ${a.no} - ${a.name}</option>`).join('');showModal('Ödeme Ekle',`<select id="pApt">${opts}</select><select id="pType"><option>Aidat</option><option>İnternet</option><option>Ortak Gider</option><option>Diğer</option></select><input id="pMonth" placeholder="Ay / Açıklama" value="Haziran 2026"><input id="pAmount" type="number" placeholder="Tutar"><select id="pPaid"><option value="false">Bekliyor</option><option value="true">Tahsil Edildi</option></select><button class="save" onclick="savePayment()">Kaydet</button>`)}
 function savePayment(){data.payments.push({id:Date.now(),apartmentId:+pApt.value,type:pType.value,amount:+pAmount.value||0,month:pMonth.value,paid:pPaid.value==='true',date:pPaid.value==='true'?new Date().toISOString().slice(0,10):''});closeModal();render()}
 function openExpenseForm(){showModal('Gider Ekle',`<select id="eType"><option>Temizlik</option><option>Bahçe</option><option>Bakım</option><option>Diğer</option></select><input id="eJob" placeholder="Yapılan İş"><input id="ePerson" placeholder="Firma / Kişi"><input id="eAmount" type="number" placeholder="Tutar"><input id="eDate" type="date" value="${new Date().toISOString().slice(0,10)}"><textarea id="eNote" placeholder="Açıklama"></textarea><button class="save" onclick="saveExpense()">Kaydet</button>`)}
 function saveExpense(){data.expenses.unshift({id:Date.now(),type:eType.value,job:eJob.value,person:ePerson.value,amount:+eAmount.value||0,date:eDate.value,note:eNote.value});closeModal();render()}

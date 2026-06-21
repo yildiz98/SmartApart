@@ -1,13 +1,16 @@
-# EMFE 3 SmartApart V11
+# EMFE 3 SmartApart V12 - Temiz Kurulum
 
-## Güncellemeler
-- 4 ayrı finans kartı kaldırıldı.
-- Ana sayfaya tek büyük Finans Özeti donut grafik eklendi.
-- EMFE 3 logosu ve hoş geldiniz kartı korundu.
-- İstatistik kartları 2x2 mobil uyumlu kaldı.
-- Ana sayfa sırası: Hoşgeldiniz, İstatistikler, Finans Özeti, Aidat Takibi, Son Giderler, Kritik Borçlular, WhatsApp İşlemleri.
-- Asansör Bakımı örnek kaydı yoktur.
-- Reklam Geliri / Bağış Geliri fon dağılımında görünür.
+## Bu sürümde yapılanlar
+- Yönetici adı: Turgut Yiğit
+- Tüm demo daire kayıtları silindi.
+- Tüm aidat / ödeme kayıtları silindi.
+- Tüm gider kayıtları silindi.
+- Tüm ekstra gelir / fon geliri kayıtları silindi.
+- Sistem boş kurulum olarak hazırlandı.
+- İlk kullanıcı tüm daireleri, araçları, ödemeleri, giderleri ve gelirleri kendisi girebilir.
 - GitHub Pages / PWA uyumludur.
 
-Veriler tarayıcı localStorage içinde saklanır.
+## Not
+Veriler tarayıcı localStorage içinde saklanır. Güncellemeden sonra eski veri görünürse:
+1. Ctrl + F5 yapın.
+2. Gerekirse Ayarlar > Demo Verileri Sıfırla butonunu kullanın.
