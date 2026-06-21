@@ -1,19 +1,20 @@
-# SmartApart v1.0
+# SmartApart V2
 
-Mobil öncelikli apartman yönetim sistemi.
+GitHub Pages uyumlu mobil apartman yönetim sistemi.
 
-## Özellikler
-- Dashboard
-- Daire kartları
-- Aidat takibi: Ödendi / Ödenmedi / Bekliyor
-- Araç takibi
-- Yönetici ve daire sakini görünümü
-- PWA desteği
-- GitHub Pages uyumlu
+## V2 Özellikleri
+- Hoş geldiniz kartı
+- Aidat ilerleme çubuğu
+- Son ödemeler
+- Daire arama ve filtreleme
+- Borçlu daireleri kırmızı gösterme
+- Aidat sekmeleri: Bu Ay / Geçen Ay / Tüm Zamanlar
+- Gelir-Gider: Elektrik, Su, Temizlik, Asansör, İnternet, Diğer
+- Profil & Ayarlar
+- Apartman bilgileri
+- Yönetici bilgileri
+- Kullanıcı yönetimi demo ekranı
+- JSON yedek al / geri yükle
+- PWA ve Service Worker cache güncellemesi
 
-## Kurulum
-1. ZIP dosyasını açın.
-2. Dosyaları GitHub reposuna yükleyin.
-3. GitHub Pages üzerinden yayınlayın.
-
-Veriler tarayıcı localStorage içinde saklanır. Firebase/bulut entegrasyonu sonraki sürümde eklenebilir.
+Veriler localStorage içinde saklanır. Firebase bulut sistemi sonraki sürümde eklenebilir.

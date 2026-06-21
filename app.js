@@ -1,102 +1,66 @@
-const STORAGE_KEY = 'smartapart_v1_data';
-const ROLE_KEY = 'smartapart_v1_role';
-const defaultData = {
-  role: 'admin', currentApartmentId: 1,
-  apartments: [
-    {id:1,no:'1',owner:'Ahmet Yılmaz',tenant:'Ali Demir',phone:'0533 111 22 33',occupied:true,due:1200,status:'paid'},
-    {id:2,no:'2',owner:'Mehmet Kaya',tenant:'',phone:'0542 222 33 44',occupied:true,due:1200,status:'unpaid'},
-    {id:3,no:'3',owner:'Ayşe Çelik',tenant:'Zeynep Arslan',phone:'0532 333 44 55',occupied:true,due:1200,status:'pending'},
-    {id:4,no:'4',owner:'Fatma Şahin',tenant:'',phone:'',occupied:false,due:1200,status:'unpaid'}
-  ],
-  vehicles: [
-    {id:1,apartmentId:1,plate:'33 ABC 123',brand:'Toyota',model:'Corolla',parking:'A-1'},
-    {id:2,apartmentId:1,plate:'33 XYZ 456',brand:'Honda',model:'Civic',parking:'A-2'},
-    {id:3,apartmentId:2,plate:'07 KLM 789',brand:'Renault',model:'Clio',parking:'B-1'}
-  ]
-};
-let data = loadData();
-function loadData(){ const saved=localStorage.getItem(STORAGE_KEY); return saved?JSON.parse(saved):structuredClone(defaultData); }
-function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-function money(n){ return '₺' + Number(n||0).toLocaleString('tr-TR'); }
-function statusText(s){ return s==='paid'?'Ödendi':s==='unpaid'?'Ödenmedi':'Bekliyor'; }
-function statusClass(s){ return s==='paid'?'paid':s==='unpaid'?'unpaid':'pending'; }
-function statusIcon(s){ return s==='paid'?'🟢':s==='unpaid'?'🔴':'⚠️'; }
-function visibleApartments(){ return data.role==='admin'?data.apartments:data.apartments.filter(a=>a.id===data.currentApartmentId); }
-function visibleVehicles(){ const ids=visibleApartments().map(a=>a.id); return data.vehicles.filter(v=>ids.includes(v.apartmentId)); }
-function render(){
-  document.getElementById('activeRoleText').textContent = data.role==='admin'?'Yönetici':'Daire Sakini';
-  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=data.role==='admin'?'inline-flex':'none');
-  fillResidentSelect(); renderStats(); renderApartments(); renderDues(); renderVehicles(); saveData();
-}
-function renderStats(){
-  const ap = visibleApartments();
-  const paid = ap.filter(a=>a.status==='paid').reduce((t,a)=>t+Number(a.due||0),0);
-  const unpaid = ap.filter(a=>a.status!=='paid').reduce((t,a)=>t+Number(a.due||0),0);
-  const stats=[['🏢','Toplam Daire',ap.length],['✅','Dolu Daire',ap.filter(a=>a.occupied).length],['🏠','Boş Daire',ap.filter(a=>!a.occupied).length],['🟢','Toplanan Aidat',money(paid)],['🔴','Ödenmeyen Aidat',money(unpaid)],['🚗','Kayıtlı Araç',visibleVehicles().length]];
-  document.getElementById('statsGrid').innerHTML=stats.map(s=>`<div class="stat"><div class="emoji">${s[0]}</div><small>${s[1]}</small><strong>${s[2]}</strong></div>`).join('');
-  document.getElementById('kasaDurumu').textContent=money(paid-unpaid);
-}
-function renderApartments(){
-  document.getElementById('apartmentList').innerHTML = visibleApartments().map(a=>{
-    const cars=data.vehicles.filter(v=>v.apartmentId===a.id);
-    return `<div class="apartment-card" onclick="${data.role==='admin'?`openApartmentForm(${a.id})`:''}">
-      <h3>👤 Daire ${a.no}</h3>
-      <div class="info-row"><span>Malik</span><b>${a.owner||'-'}</b></div>
-      <div class="info-row"><span>Kiracı</span><b>${a.tenant||'Boş / Yok'}</b></div>
-      <div class="info-row"><span>Telefon</span><b>${a.phone||'-'}</b></div>
-      <div class="info-row"><span>Aidat</span><b>${money(a.due)}</b></div>
-      <div class="info-row"><span>Durum</span><span class="status ${statusClass(a.status)}">${statusIcon(a.status)} ${statusText(a.status)}</span></div>
-      <div class="chips">${cars.length?cars.map(c=>`<span class="chip">${c.plate}</span>`).join(''):'<span class="chip">Araç yok</span>'}</div>
-    </div>`;
-  }).join('');
-}
-function renderDues(){
-  document.getElementById('duesTable').innerHTML = visibleApartments().map(a=>`<tr>
-    <td>${a.no}</td><td>${a.owner}</td>
-    <td>${data.role==='admin'?`<input class="amount-input" type="number" value="${a.due}" onchange="updateDue(${a.id},this.value)">`:money(a.due)}</td>
-    <td>${data.role==='admin'?`<select class="table-status" onchange="updateStatus(${a.id},this.value)"><option value="paid" ${a.status==='paid'?'selected':''}>🟢 Ödendi</option><option value="unpaid" ${a.status==='unpaid'?'selected':''}>🔴 Ödenmedi</option><option value="pending" ${a.status==='pending'?'selected':''}>⚠️ Bekliyor</option></select>`:`<span class="status ${statusClass(a.status)}">${statusIcon(a.status)} ${statusText(a.status)}</span>`}</td>
-  </tr>`).join('');
-}
-function renderVehicles(){
-  const apMap=Object.fromEntries(data.apartments.map(a=>[a.id,a]));
-  document.getElementById('vehicleList').innerHTML = visibleVehicles().map(v=>`<div class="vehicle-card" onclick="${data.role==='admin'?`openVehicleForm(${v.id})`:''}">
-    <h3>🚗 ${v.plate}</h3>
-    <div class="info-row"><span>Daire</span><b>${apMap[v.apartmentId]?.no||'-'}</b></div>
-    <div class="info-row"><span>Marka / Model</span><b>${v.brand||'-'} ${v.model||''}</b></div>
-    <div class="info-row"><span>Park Yeri</span><b>${v.parking||'-'}</b></div>
-  </div>`).join('') || '<div class="card">Kayıtlı araç yok.</div>';
-}
-function updateDue(id,val){ const a=data.apartments.find(x=>x.id===id); a.due=Number(val||0); render(); }
-function updateStatus(id,val){ const a=data.apartments.find(x=>x.id===id); a.status=val; render(); }
-function fillResidentSelect(){
-  const s=document.getElementById('residentSelect');
-  s.innerHTML=data.apartments.map(a=>`<option value="${a.id}">Daire ${a.no} - ${a.owner}</option>`).join('');
-  s.value=data.currentApartmentId;
-}
-function openLogin(){ document.getElementById('loginView').classList.remove('hidden'); document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); }
-function loginAsAdmin(){ data.role='admin'; document.getElementById('loginView').classList.add('hidden'); showPage('dashboardView'); render(); }
-function loginAsResident(){ data.role='resident'; data.currentApartmentId=Number(document.getElementById('residentSelect').value); document.getElementById('loginView').classList.add('hidden'); showPage('dashboardView'); render(); }
-function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id)); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===id)); }
-document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('loginView').classList.add('hidden');showPage(btn.dataset.page)}));
-function closeModal(){ document.getElementById('modal').classList.add('hidden'); }
-function showModal(title,html){ document.getElementById('modalTitle').textContent=title; document.getElementById('modalBody').innerHTML=html; document.getElementById('modal').classList.remove('hidden'); }
-function openApartmentForm(id=null){
-  const a=id?data.apartments.find(x=>x.id===id):{id:null,no:'',owner:'',tenant:'',phone:'',occupied:true,due:1200,status:'unpaid'};
-  showModal(id?'Daire Düzenle':'Yeni Daire', `<input id="fNo" placeholder="Daire No" value="${a.no}"><input id="fOwner" placeholder="Malik" value="${a.owner}"><input id="fTenant" placeholder="Kiracı" value="${a.tenant}"><input id="fPhone" placeholder="Telefon" value="${a.phone}"><input id="fDue" type="number" placeholder="Aidat" value="${a.due}"><select id="fStatus"><option value="paid" ${a.status==='paid'?'selected':''}>🟢 Ödendi</option><option value="unpaid" ${a.status==='unpaid'?'selected':''}>🔴 Ödenmedi</option><option value="pending" ${a.status==='pending'?'selected':''}>⚠️ Bekliyor</option></select><select id="fOcc"><option value="true" ${a.occupied?'selected':''}>Dolu</option><option value="false" ${!a.occupied?'selected':''}>Boş</option></select><div class="form-actions">${id?`<button class="danger-btn" onclick="deleteApartment(${id})">Sil</button>`:''}<button class="save-btn" onclick="saveApartment(${id||'null'})">Kaydet</button></div>`);
-}
-function saveApartment(id){
-  const obj={id:id||Date.now(),no:fNo.value,owner:fOwner.value,tenant:fTenant.value,phone:fPhone.value,occupied:fOcc.value==='true',due:Number(fDue.value||0),status:fStatus.value};
-  if(id){ const i=data.apartments.findIndex(x=>x.id===id); data.apartments[i]=obj; } else data.apartments.push(obj);
-  closeModal(); render();
-}
-function deleteApartment(id){ if(confirm('Bu daire ve araçları silinsin mi?')){ data.apartments=data.apartments.filter(a=>a.id!==id); data.vehicles=data.vehicles.filter(v=>v.apartmentId!==id); closeModal(); render(); }}
-function openVehicleForm(id=null){
- const v=id?data.vehicles.find(x=>x.id===id):{id:null,apartmentId:data.apartments[0]?.id,plate:'',brand:'',model:'',parking:''};
- const options=data.apartments.map(a=>`<option value="${a.id}" ${v.apartmentId===a.id?'selected':''}>Daire ${a.no} - ${a.owner}</option>`).join('');
- showModal(id?'Araç Düzenle':'Yeni Araç', `<select id="vApartment">${options}</select><input id="vPlate" placeholder="Plaka" value="${v.plate}"><input id="vBrand" placeholder="Marka" value="${v.brand}"><input id="vModel" placeholder="Model" value="${v.model}"><input id="vParking" placeholder="Park Yeri" value="${v.parking}"><div class="form-actions">${id?`<button class="danger-btn" onclick="deleteVehicle(${id})">Sil</button>`:''}<button class="save-btn" onclick="saveVehicle(${id||'null'})">Kaydet</button></div>`);
-}
-function saveVehicle(id){ const obj={id:id||Date.now(),apartmentId:Number(vApartment.value),plate:vPlate.value.toUpperCase(),brand:vBrand.value,model:vModel.value,parking:vParking.value}; if(id){ const i=data.vehicles.findIndex(x=>x.id===id); data.vehicles[i]=obj; } else data.vehicles.push(obj); closeModal(); render(); }
-function deleteVehicle(id){ if(confirm('Araç silinsin mi?')){ data.vehicles=data.vehicles.filter(v=>v.id!==id); closeModal(); render(); }}
-function resetMonth(){ if(confirm('Bu ay için tüm aidatlar Ödenmedi yapılsın mı?')){ data.apartments.forEach(a=>a.status='unpaid'); render(); }}
-if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js')); }
+const STORAGE_KEY='smartapart_v2_data';
+let dueTab='this', aptFilter='all';
+const defaults={role:'admin',currentApartmentId:8,settings:{apartmentName:'Yıldız Apartmanı',address:'Mersin',manager:'Ahmet Yılmaz',email:'yildizapartmani@yonetici.com',phone:'0555 123 45 67'},apartments:[
+{id:4,floor:'1. Kat',no:'4',owner:'Ahmet Yılmaz',tenant:'Ali Demir',phone:'0533 111 22 33',type:'2+1',m2:95,occupied:true,due:1200,status:'paid',lastPay:'07.05.2024'},
+{id:5,floor:'1. Kat',no:'5',owner:'Mehmet Demir',tenant:'',phone:'0542 222 33 44',type:'2+1',m2:90,occupied:true,due:1200,status:'paid',lastPay:'05.05.2024'},
+{id:8,floor:'2. Kat',no:'8',owner:'Ayşe Kaya',tenant:'',phone:'0532 333 44 55',type:'3+1',m2:120,occupied:true,due:1200,status:'unpaid',lastPay:''},
+{id:9,floor:'2. Kat',no:'9',owner:'Fatma Şahin',tenant:'',phone:'0534 444 55 66',type:'3+1',m2:115,occupied:true,due:1200,status:'paid',lastPay:'02.05.2024'},
+{id:12,floor:'3. Kat',no:'12',owner:'Hasan Öz',tenant:'',phone:'0535 555 66 77',type:'3+1',m2:120,occupied:true,due:1200,status:'unpaid',lastPay:''},
+{id:13,floor:'3. Kat',no:'13',owner:'Zeynep Aydın',tenant:'',phone:'0536 666 77 88',type:'2+1',m2:100,occupied:false,due:1200,status:'pending',lastPay:''}
+],vehicles:[
+{id:1,apartmentId:4,plate:'33 ABC 123',brand:'Toyota',model:'Corolla',parking:'A-1'},
+{id:2,apartmentId:8,plate:'33 XYZ 456',brand:'Honda',model:'Civic',parking:'A-2'},
+{id:3,apartmentId:9,plate:'07 KLM 789',brand:'Renault',model:'Clio',parking:'B-1'}
+],finance:[
+{id:1,type:'income',cat:'Aidat Geliri - 1. Kat',amount:6000,date:'10.05.2024'},
+{id:2,type:'expense',cat:'Elektrik',amount:4250,date:'09.05.2024'},
+{id:3,type:'expense',cat:'Su',amount:2350,date:'08.05.2024'},
+{id:4,type:'expense',cat:'Temizlik',amount:2000,date:'07.05.2024'},
+{id:5,type:'expense',cat:'Asansör Bakım',amount:1850,date:'06.05.2024'},
+{id:6,type:'expense',cat:'İnternet',amount:1200,date:'05.05.2024'},
+{id:7,type:'expense',cat:'Diğer',amount:1580,date:'04.05.2024'}
+]};
+let data=load();
+function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||structuredClone(defaults)}catch(e){return structuredClone(defaults)}}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+function tl(n){return '₺ '+Number(n||0).toLocaleString('tr-TR')}
+function stText(s){return s==='paid'?'Ödendi':s==='unpaid'?'Ödenmedi':'Bekliyor'}
+function stIcon(s){return s==='paid'?'🟢':s==='unpaid'?'🔴':'⚠️'}
+function visibleApts(){return data.role==='admin'?data.apartments:data.apartments.filter(a=>a.id===data.currentApartmentId)}
+function visibleVehicles(){let ids=visibleApts().map(a=>a.id);return data.vehicles.filter(v=>ids.includes(v.apartmentId))}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('login').classList.add('hidden');render()}
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function render(){document.getElementById('apartmentNameTop').textContent=data.settings.apartmentName;document.getElementById('managerNameDash').textContent=data.settings.manager;document.getElementById('roleDash').textContent=data.role==='admin'?'Yönetici':'Daire Sakini';document.getElementById('profileManager').textContent=data.settings.manager;document.getElementById('profileMail').textContent=data.settings.email;document.getElementById('profilePhone').textContent=data.settings.phone;document.querySelectorAll('.admin-only').forEach(e=>e.style.display=data.role==='admin'?'inline-grid':'none');fillResident();renderDash();renderApartments();renderDues();renderVehicles();renderFinance();save()}
+function renderDash(){let a=visibleApts(),total=a.reduce((t,x)=>t+x.due,0),paid=a.filter(x=>x.status==='paid').reduce((t,x)=>t+x.due,0),unpaid=a.filter(x=>x.status==='unpaid').length,pct=total?Math.round(paid/total*100):0;document.getElementById('debtBadge').textContent=unpaid;document.getElementById('statsGrid').innerHTML=[['Toplam Daire',a.length],['Dolu Daire',a.filter(x=>x.occupied).length],['Kiracı Sayısı',a.filter(x=>x.tenant).length],['Borçlu Daire',unpaid]].map(x=>`<div class="stat"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');document.getElementById('collectedText').textContent=tl(paid);document.getElementById('progressPercent').textContent='%'+pct;document.getElementById('progressBar').style.width=pct+'%';let pays=a.filter(x=>x.status==='paid').slice(0,5);document.getElementById('lastPayments').innerHTML=pays.map(x=>`<div class="mini-item"><div><b>Daire ${x.no}</b><br><small>${x.owner} • ${x.lastPay||'Bu ay'}</small></div><span class="amount-green">${tl(x.due)}</span></div>`).join('')||'<p class="note">Henüz ödeme yok.</p>'}
+function renderApartments(){let q=(document.getElementById('apartmentSearch')?.value||'').toLowerCase();let a=visibleApts().filter(x=>(x.no+x.owner+x.floor).toLowerCase().includes(q));if(aptFilter!=='all')a=a.filter(x=>x.status===aptFilter);document.getElementById('apartmentList').innerHTML=a.map(x=>aptHTML(x)).join('')||'<div class="card">Kayıt bulunamadı.</div>'}
+function aptHTML(x){let cars=data.vehicles.filter(v=>v.apartmentId===x.id);return `<div class="apt-card ${x.status}" onclick="${data.role==='admin'?`openApartmentForm(${x.id})`:''}"><div class="apt-top"><div><h3>${x.floor} - Daire ${x.no}</h3><p>${x.owner}</p></div><span class="status ${x.status}">${stText(x.status)}</span></div><div class="apt-meta"><span>${tl(x.due)}</span><span>${x.phone||''}</span></div><div class="chips">${cars.length?cars.map(c=>`<span class="chip">🚗 ${c.plate}</span>`).join(''):'<span class="chip">Araç yok</span>'}</div></div>`}
+function cycleFilter(){let arr=['all','paid','unpaid','pending'];aptFilter=arr[(arr.indexOf(aptFilter)+1)%arr.length];document.getElementById('filterBtn').textContent=aptFilter==='all'?'Tümü':stText(aptFilter);renderApartments()}
+function setDueTab(t){dueTab=t;document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',[ 'this','last','all'][i]===t));renderDues()}
+function renderDues(){let a=visibleApts(),total=a.reduce((t,x)=>t+x.due,0),paid=a.filter(x=>x.status==='paid').reduce((t,x)=>t+x.due,0),pct=total?Math.round(paid/total*100):0;document.getElementById('periodTitle').textContent=dueTab==='this'?'Mayıs 2024':dueTab==='last'?'Nisan 2024':'Tüm Zamanlar';document.getElementById('periodCollection').textContent=`${tl(paid)} / ${tl(total)}`;document.getElementById('periodBar').style.width=pct+'%';document.getElementById('duesList').innerHTML=a.map(x=>`<div class="apt-card ${x.status}"><div class="due-item"><div><b>${x.floor} - Daire ${x.no}</b><br><small>${x.owner}</small><br><b>${tl(x.due)}</b></div><div>${data.role==='admin'?`<select onchange="updateStatus(${x.id},this.value)"><option value="paid" ${x.status==='paid'?'selected':''}>🟢 Ödendi</option><option value="unpaid" ${x.status==='unpaid'?'selected':''}>🔴 Ödenmedi</option><option value="pending" ${x.status==='pending'?'selected':''}>⚠️ Bekliyor</option></select><input type="number" value="${x.due}" onchange="updateDue(${x.id},this.value)">`:`<span class="status ${x.status}">${stIcon(x.status)} ${stText(x.status)}</span>`}<small>${x.status==='paid'?'Ödeme: '+x.lastPay:'Son Gün: 31.05.2024'}</small></div></div></div>`).join('')}
+function renderVehicles(){let q=(document.getElementById('vehicleSearch')?.value||'').toLowerCase();let ap=Object.fromEntries(data.apartments.map(a=>[a.id,a]));let v=visibleVehicles().filter(x=>(x.plate+x.brand+x.model+(ap[x.apartmentId]?.owner||'')+(ap[x.apartmentId]?.no||'')).toLowerCase().includes(q));document.getElementById('vehicleList').innerHTML=v.map(x=>`<div class="vehicle-card" onclick="${data.role==='admin'?`openVehicleForm(${x.id})`:''}"><h3>🚗 ${x.plate}</h3><p><b>Daire:</b> ${ap[x.apartmentId]?.no} - ${ap[x.apartmentId]?.owner}</p><p><b>Marka:</b> ${x.brand} ${x.model}</p><p><b>Park Yeri:</b> ${x.parking}</p></div>`).join('')||'<div class="card">Araç bulunamadı.</div>'}
+function renderFinance(){let inc=data.finance.filter(x=>x.type==='income').reduce((t,x)=>t+x.amount,0),exp=data.finance.filter(x=>x.type==='expense').reduce((t,x)=>t+x.amount,0);document.getElementById('totalIncome').textContent=tl(inc);document.getElementById('totalExpense').textContent=tl(exp);let cats={};data.finance.filter(x=>x.type==='expense').forEach(x=>cats[x.cat]=(cats[x.cat]||0)+x.amount);document.getElementById('expenseCats').innerHTML=Object.entries(cats).map(([k,v])=>`<div class="cat-row"><span>${k}</span><b>${tl(v)}</b></div>`).join('');document.getElementById('financeList').innerHTML=data.finance.slice(0,8).map(x=>`<div class="mini-item"><span class="circle ${x.type==='expense'?'red':''}">${x.type==='income'?'↑':'↓'}</span><div style="flex:1;margin-left:10px"><b>${x.cat}</b><br><small>${x.date}</small></div><span class="${x.type==='income'?'amount-green':'amount-red'}">${tl(x.amount)}</span></div>`).join('')}
+function updateStatus(id,val){let a=data.apartments.find(x=>x.id===id);a.status=val;if(val==='paid'&&!a.lastPay)a.lastPay='21.06.2026';render()}
+function updateDue(id,val){data.apartments.find(x=>x.id===id).due=Number(val||0);render()}
+function fillResident(){let s=document.getElementById('residentSelect');if(!s)return;s.innerHTML=data.apartments.map(a=>`<option value="${a.id}">Daire ${a.no} - ${a.owner}</option>`).join('');s.value=data.currentApartmentId}
+function openLogin(){document.getElementById('login').classList.remove('hidden');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))}
+function loginAs(role){data.role=role;if(role==='resident')data.currentApartmentId=Number(document.getElementById('residentSelect').value);showPage('dashboard')}
+function closeModal(){document.getElementById('modal').classList.add('hidden')}
+function modal(t,h){document.getElementById('modalTitle').textContent=t;document.getElementById('modalBody').innerHTML=h;document.getElementById('modal').classList.remove('hidden')}
+function openApartmentForm(id=null){let a=id?data.apartments.find(x=>x.id===id):{id:null,floor:'',no:'',owner:'',tenant:'',phone:'',type:'',m2:'',occupied:true,due:1200,status:'unpaid'};modal(id?'Daire Düzenle':'Yeni Daire',`<div class="two"><input id="fFloor" placeholder="Kat" value="${a.floor}"><input id="fNo" placeholder="Daire No" value="${a.no}"></div><input id="fOwner" placeholder="Malik" value="${a.owner}"><input id="fTenant" placeholder="Kiracı" value="${a.tenant}"><input id="fPhone" placeholder="Telefon" value="${a.phone}"><div class="two"><input id="fType" placeholder="Tip 3+1" value="${a.type}"><input id="fM2" placeholder="m²" value="${a.m2}"></div><input id="fDue" type="number" placeholder="Aidat" value="${a.due}"><select id="fStatus"><option value="paid" ${a.status==='paid'?'selected':''}>Ödendi</option><option value="unpaid" ${a.status==='unpaid'?'selected':''}>Ödenmedi</option><option value="pending" ${a.status==='pending'?'selected':''}>Bekliyor</option></select><button class="save" onclick="saveApartment(${id||'null'})">Kaydet</button>${id?`<button class="danger" onclick="deleteApartment(${id})">Sil</button>`:''}`)}
+function saveApartment(id){let obj={id:id||Date.now(),floor:fFloor.value,no:fNo.value,owner:fOwner.value,tenant:fTenant.value,phone:fPhone.value,type:fType.value,m2:fM2.value,occupied:!!fTenant.value||true,due:Number(fDue.value||0),status:fStatus.value,lastPay:''};if(id){data.apartments[data.apartments.findIndex(x=>x.id===id)]=obj}else data.apartments.push(obj);closeModal();render()}
+function deleteApartment(id){if(confirm('Daire ve araçları silinsin mi?')){data.apartments=data.apartments.filter(x=>x.id!==id);data.vehicles=data.vehicles.filter(x=>x.apartmentId!==id);closeModal();render()}}
+function openVehicleForm(id=null){let v=id?data.vehicles.find(x=>x.id===id):{id:null,apartmentId:data.apartments[0].id,plate:'',brand:'',model:'',parking:''};let opts=data.apartments.map(a=>`<option value="${a.id}" ${v.apartmentId===a.id?'selected':''}>Daire ${a.no} - ${a.owner}</option>`).join('');modal(id?'Araç Düzenle':'Yeni Araç',`<select id="vApt">${opts}</select><input id="vPlate" placeholder="Plaka" value="${v.plate}"><input id="vBrand" placeholder="Marka" value="${v.brand}"><input id="vModel" placeholder="Model" value="${v.model}"><input id="vParking" placeholder="Park Yeri" value="${v.parking}"><button class="save" onclick="saveVehicle(${id||'null'})">Kaydet</button>${id?`<button class="danger" onclick="deleteVehicle(${id})">Sil</button>`:''}`)}
+function saveVehicle(id){let obj={id:id||Date.now(),apartmentId:Number(vApt.value),plate:vPlate.value.toUpperCase(),brand:vBrand.value,model:vModel.value,parking:vParking.value};if(id)data.vehicles[data.vehicles.findIndex(x=>x.id===id)]=obj;else data.vehicles.push(obj);closeModal();render()}
+function deleteVehicle(id){if(confirm('Araç silinsin mi?')){data.vehicles=data.vehicles.filter(x=>x.id!==id);closeModal();render()}}
+function openFinanceForm(){modal('Gelir / Gider Ekle',`<select id="finType"><option value="income">Gelir</option><option value="expense">Gider</option></select><select id="finCat"><option>Aidat Geliri</option><option>Elektrik</option><option>Su</option><option>Temizlik</option><option>Asansör Bakım</option><option>İnternet</option><option>Diğer</option></select><input id="finAmount" type="number" placeholder="Tutar"><input id="finDate" value="21.06.2026"><button class="save" onclick="saveFinance()">Kaydet</button>`)}
+function saveFinance(){data.finance.unshift({id:Date.now(),type:finType.value,cat:finCat.value,amount:Number(finAmount.value||0),date:finDate.value});closeModal();render()}
+function openApartmentSettings(){modal('Apartman Bilgileri',`<input id="sName" value="${data.settings.apartmentName}" placeholder="Apartman adı"><input id="sAddress" value="${data.settings.address}" placeholder="Adres"><button class="save" onclick="data.settings.apartmentName=sName.value;data.settings.address=sAddress.value;closeModal();render()">Kaydet</button>`)}
+function openManagerSettings(){modal('Yönetici Bilgileri',`<input id="mName" value="${data.settings.manager}" placeholder="Ad Soyad"><input id="mMail" value="${data.settings.email}" placeholder="E-posta"><input id="mPhone" value="${data.settings.phone}" placeholder="Telefon"><button class="save" onclick="data.settings.manager=mName.value;data.settings.email=mMail.value;data.settings.phone=mPhone.value;closeModal();render()">Kaydet</button>`)}
+function openUsers(){modal('Kullanıcı Yönetimi',`<p class="note">Demo sürüm: Yönetici ve Daire Sakini rolü vardır. Firebase eklenince gerçek kullanıcı adı/şifre sistemi bağlanır.</p><button class="primary" onclick="loginAs('admin')">Yönetici Görünümü</button><button class="secondary" onclick="openLogin()">Daire Sakini Seç</button>`)}
+function backupData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='smartapart-yedek.json';a.click()}
+function restoreData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{data=JSON.parse(r.result);render()};r.readAsText(f)}
+function clearAll(){if(confirm('Tüm veriler silinsin mi?')){localStorage.removeItem(STORAGE_KEY);data=structuredClone(defaults);render()}}
+function resetMonth(){if(confirm('Bu ay tüm aidatlar Ödenmedi yapılsın mı?')){data.apartments.forEach(a=>{a.status='unpaid';a.lastPay=''});render()}}
+function toggleQuickMenu(){openLogin()}
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
 render();
