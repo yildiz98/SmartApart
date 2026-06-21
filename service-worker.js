@@ -1,4 +1,4 @@
-const CACHE_NAME='emfe3-smartapart-v13-clean-cache';
+const CACHE_NAME='emfe3-smartapart-v16-auto-update-cache';
 const FILES=['./','./index.html','./style.css?v=13.0','./app.js?v=13.0','./manifest.json','./icon.svg','./logo.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(FILES)))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE_NAME?caches.delete(k):null))).then(()=>self.clients.claim()))});
