@@ -2,111 +2,108 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#061a3a" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#062a5c" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="SmartApart V2" />
-  <title>SmartApart V2 | Apartman Yönetimi</title>
+  <meta name="apple-mobile-web-app-title" content="EMFE 3" />
+  <title>EMFE 3 Apartmanı | Yönetici Paneli</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <link rel="stylesheet" href="style.css?v=2.0.0" />
+  <link rel="stylesheet" href="style.css?v=3.0" />
 </head>
 <body>
-  <div class="app">
+  <div class="phone">
     <header class="topbar">
-      <button class="icon-btn" onclick="toggleQuickMenu()">☰</button>
-      <div class="brand-title"><b id="apartmentNameTop">Yıldız Apartmanı</b><span>Yönetici Paneli</span></div>
-      <button class="notif" onclick="showPage('dues')">🔔<em id="debtBadge">0</em></button>
+      <button class="icon-btn" onclick="openSettings()">☰</button>
+      <div class="title"><strong>EMFE 3 Apartmanı</strong><span>Yönetici Paneli</span></div>
+      <button class="icon-btn" onclick="openPaymentForm()">＋</button>
     </header>
 
     <main>
-      <section id="login" class="page hidden">
-        <div class="hero-card login-card">
-          <div class="avatar">SA</div>
-          <h2>SmartApart V2</h2>
-          <p>Yönetici tüm sistemi, daire sakini sadece kendi dairesini görür.</p>
-          <button class="primary" onclick="loginAs('admin')">Yönetici Girişi</button>
-          <select id="residentSelect"></select>
-          <button class="secondary" onclick="loginAs('resident')">Daire Sakini Girişi</button>
-        </div>
-      </section>
-
-      <section id="dashboard" class="page active">
-        <div class="hero-card welcome">
+      <section id="home" class="page active">
+        <div class="hero-card">
           <div>
-            <small>Hoş geldiniz,</small>
-            <h2 id="managerNameDash">Ahmet Yılmaz</h2>
-            <p id="roleDash">Yönetici</p>
+            <p>Hoş geldiniz,</p>
+            <h1>Yönetici</h1>
+            <span>EMFE 3 Apartmanı</span>
           </div>
-          <div class="building">🏢</div>
+          <img src="icon.svg" alt="EMFE 3" />
         </div>
-
-        <div class="stats-grid" id="statsGrid"></div>
-
-        <div class="card progress-card">
-          <div class="row"><div><small>Bu Ay Toplanan Aidat</small><strong id="collectedText">₺0</strong></div><span id="progressPercent">0%</span></div>
-          <div class="progress"><i id="progressBar"></i></div>
+        <div class="progress-card">
+          <div class="progress-head"><span>Bu Ay Tahsilat</span><b id="monthlyPercent">%0</b></div>
+          <h2 id="monthlyCollected">₺0</h2>
+          <small id="monthlyTarget">Toplam borç: ₺0</small>
+          <div class="bar"><i id="progressBar"></i></div>
         </div>
-
-        <div class="card">
-          <div class="section-head"><h3>Son Ödemeler</h3><button onclick="showPage('dues')">Tümü ›</button></div>
-          <div id="lastPayments" class="mini-list"></div>
-        </div>
+        <div class="stats" id="statsGrid"></div>
+        <div class="section-title"><h2>Son Ödemeler</h2><button onclick="showPage('payments')">Tümü</button></div>
+        <div id="recentPayments" class="list"></div>
       </section>
 
       <section id="apartments" class="page">
-        <div class="section-head"><h2>Daireler</h2><button class="add-btn admin-only" onclick="openApartmentForm()">＋</button></div>
-        <div class="search-row"><input id="apartmentSearch" oninput="renderApartments()" placeholder="Daire veya isim ara..." /><button onclick="cycleFilter()" id="filterBtn">Tümü</button></div>
+        <div class="section-title"><h2>Daireler</h2><button onclick="openApartmentForm()">+ Daire</button></div>
+        <div class="search-row">
+          <input id="apartmentSearch" oninput="renderApartments()" placeholder="Daire, kat, isim veya telefon ara..." />
+          <select id="apartmentFilter" onchange="renderApartments()">
+            <option value="all">Tümü</option>
+            <option value="debt">Borçlu</option>
+            <option value="paid">Borçsuz</option>
+          </select>
+        </div>
         <div id="apartmentList" class="list"></div>
       </section>
 
-      <section id="dues" class="page">
-        <div class="section-head"><h2>Aidat Takibi</h2><button class="add-btn admin-only" onclick="resetMonth()">Sıfırla</button></div>
-        <div class="month-card"><b id="periodTitle">Mayıs 2024</b><span id="periodCollection">₺0 / ₺0</span><div class="progress"><i id="periodBar"></i></div></div>
-        <div class="tabs"><button class="tab active" onclick="setDueTab('this')">Bu Ay</button><button class="tab" onclick="setDueTab('last')">Geçen Ay</button><button class="tab" onclick="setDueTab('all')">Tüm Zamanlar</button></div>
-        <div id="duesList" class="list"></div>
+      <section id="payments" class="page">
+        <div class="section-title"><h2>Ödemeler</h2><button onclick="openPaymentForm()">+ Borç</button></div>
+        <div class="tabs">
+          <button class="tab active" data-range="this" onclick="setPaymentRange('this')">Bu Ay</button>
+          <button class="tab" data-range="last" onclick="setPaymentRange('last')">Geçen Ay</button>
+          <button class="tab" data-range="all" onclick="setPaymentRange('all')">Tüm Zamanlar</button>
+        </div>
+        <div id="paymentList" class="list"></div>
       </section>
 
-      <section id="finance" class="page">
-        <div class="section-head"><h2>Gelir - Gider</h2><button class="add-btn admin-only" onclick="openFinanceForm()">＋</button></div>
-        <select id="financeMonth" onchange="renderFinance()"><option>Mayıs 2024</option><option>Nisan 2024</option></select>
-        <div class="finance-grid"><div class="soft green"><small>Toplam Gelir</small><strong id="totalIncome">₺0</strong></div><div class="soft red"><small>Toplam Gider</small><strong id="totalExpense">₺0</strong></div></div>
-        <div class="card"><h3>Kategori Dağılımı</h3><div id="expenseCats"></div></div>
-        <div class="card"><div class="section-head"><h3>Son İşlemler</h3></div><div id="financeList" class="mini-list"></div></div>
-      </section>
-
-      <section id="vehicles" class="page">
-        <div class="section-head"><h2>Araçlar</h2><button class="add-btn admin-only" onclick="openVehicleForm()">＋</button></div>
-        <input id="vehicleSearch" oninput="renderVehicles()" placeholder="Plaka, malik veya daire ara..." />
-        <div id="vehicleList" class="list"></div>
+      <section id="reports" class="page">
+        <div class="section-title"><h2>Rapor</h2><button onclick="exportBackup()">Yedek Al</button></div>
+        <div class="stats report-stats" id="reportStats"></div>
+        <div class="card">
+          <h3>Yedekleme</h3>
+          <p class="muted">Veriler bu telefonda/tarayıcıda saklanır. GitHub güncellemesinde veriler korunur; tarayıcı verisi silinirse kayıtlar gider.</p>
+          <button class="primary" onclick="exportBackup()">JSON Yedek Al</button>
+          <label class="upload">JSON Geri Yükle<input type="file" accept="application/json" onchange="importBackup(event)"></label>
+        </div>
       </section>
 
       <section id="profile" class="page">
-        <div class="profile-card hero-card"><div class="avatar">👤</div><div><h2 id="profileManager">Ahmet Yılmaz</h2><p id="profileMail">yildizapartmani@yonetici.com</p><p id="profilePhone">0555 123 45 67</p></div></div>
-        <div class="settings-list">
-          <button onclick="openApartmentSettings()">🏢 Apartman Bilgileri <span>›</span></button>
-          <button onclick="openManagerSettings()">👤 Yönetici Bilgileri <span>›</span></button>
-          <button onclick="openUsers()">👥 Kullanıcı Yönetimi <span>›</span></button>
-          <button onclick="backupData()">💾 Yedek Al <span>›</span></button>
-          <button onclick="document.getElementById('restoreFile').click()">📥 Yedek Geri Yükle <span>›</span></button>
-          <button class="danger-text" onclick="clearAll()">🗑️ Tüm Verileri Sil</button>
-          <button class="danger-text" onclick="openLogin()">🚪 Çıkış / Rol Değiştir</button>
+        <div class="profile-card">
+          <img src="icon.svg" alt="logo" />
+          <div><h2>EMFE 3 Apartmanı</h2><p>Yönetici Paneli</p><span>Mavi Beyaz Mobil Sistem</span></div>
         </div>
-        <input id="restoreFile" type="file" accept="application/json" hidden onchange="restoreData(event)" />
+        <div class="menu-card">
+          <button onclick="openSettings()">🏢 Apartman Bilgileri <span>›</span></button>
+          <button onclick="openManager()">👤 Yönetici Bilgileri <span>›</span></button>
+          <button onclick="exportBackup()">💾 Yedekleme <span>›</span></button>
+          <button onclick="resetDemo()" class="danger">🗑️ Verileri Sıfırla <span>›</span></button>
+        </div>
       </section>
     </main>
 
     <nav class="bottom-nav">
-      <button class="nav active" data-page="dashboard">⌂<span>Ana Sayfa</span></button>
-      <button class="nav" data-page="apartments">▣<span>Daireler</span></button>
-      <button class="nav" data-page="dues">₺<span>Aidatlar</span></button>
-      <button class="nav" data-page="finance">▤<span>Giderler</span></button>
-      <button class="nav" data-page="profile">♙<span>Profil</span></button>
+      <button class="nav active" data-page="home" onclick="showPage('home')">🏠<span>Ana Sayfa</span></button>
+      <button class="nav" data-page="apartments" onclick="showPage('apartments')">🏢<span>Daireler</span></button>
+      <button class="nav" data-page="payments" onclick="showPage('payments')">💰<span>Ödemeler</span></button>
+      <button class="nav" data-page="reports" onclick="showPage('reports')">📊<span>Rapor</span></button>
+      <button class="nav" data-page="profile" onclick="showPage('profile')">👤<span>Profil</span></button>
     </nav>
   </div>
 
-  <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
-  <script src="app.js?v=2.0.0"></script>
+  <div id="modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head"><h3 id="modalTitle">Kayıt</h3><button onclick="closeModal()">✕</button></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+  <script src="app.js?v=3.0"></script>
 </body>
 </html>

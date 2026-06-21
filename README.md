@@ -1,20 +1,21 @@
-# SmartApart V2
+# EMFE 3 Apartmanı - SmartApart V3
 
 GitHub Pages uyumlu mobil apartman yönetim sistemi.
 
-## V2 Özellikleri
-- Hoş geldiniz kartı
-- Aidat ilerleme çubuğu
-- Son ödemeler
-- Daire arama ve filtreleme
-- Borçlu daireleri kırmızı gösterme
-- Aidat sekmeleri: Bu Ay / Geçen Ay / Tüm Zamanlar
-- Gelir-Gider: Elektrik, Su, Temizlik, Asansör, İnternet, Diğer
-- Profil & Ayarlar
-- Apartman bilgileri
-- Yönetici bilgileri
-- Kullanıcı yönetimi demo ekranı
+## Özellikler
+- Sadece yönetici paneli
+- Daire kartı: kat, daire no, isim soyisim, telefon, araçlar
+- Ödeme türleri: Aidat, İnternet, Ortak Gider, Diğer
+- Sabit aidat yok; yönetici istediği tutarda borç oluşturur
+- Tahsilat durumu: Ödenmedi, Tahsil Edildi, Bekliyor
+- Dashboard, daire arama, filtreleme, son ödemeler
 - JSON yedek al / geri yükle
-- PWA ve Service Worker cache güncellemesi
+- PWA ve GitHub Pages uyumlu
 
-Veriler localStorage içinde saklanır. Firebase bulut sistemi sonraki sürümde eklenebilir.
+## Kurulum
+1. ZIP'i açın.
+2. Dosyaları GitHub deposuna yükleyin.
+3. GitHub Pages'i açın.
+4. Güncelleme sonrası gerekirse Ctrl + F5 yapın.
+
+Veriler localStorage içinde saklanır.
