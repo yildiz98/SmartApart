@@ -10,7 +10,7 @@
   <title>EMFE 3 SmartApart</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="logo.png" />
-  <link rel="stylesheet" href="style.css?v=10.0" />
+  <link rel="stylesheet" href="style.css?v=11.0" />
 </head>
 <body>
   <div class="layout">
@@ -45,22 +45,29 @@
             <div class="stats-grid" id="statsGrid"></div>
           </div>
 
-          <div class="money-grid">
-            <div class="big-card blue-money"><i>💳</i><div><span>Bu Ay Toplanan Aidat</span><strong id="monthlyIncome">₺0</strong></div><em>+14%<small>Geçen aya göre</small></em></div>
-            <div class="big-card" onclick="showPage('fund')"><i>💼</i><div><span>Kasa Durumu</span><strong id="fundBalance">₺0</strong></div><b>›</b></div>
-            <div class="big-card extra"><i>💰</i><div><span>Ekstra Gelir (Bu Ay)</span><strong id="extraIncomeTotal">₺0</strong><small id="extraIncomeBreakdown"></small></div><em>+23%<small>Geçen aya göre</small></em></div>
-            <div class="big-card debt"><i>🔴</i><div><span>Borçlu Toplam</span><strong id="debtTotalHome">₺0</strong></div><b>›</b></div>
+          <div class="finance-center">
+            <div class="finance-head">
+              <div>
+                <h3>Finans Özeti</h3>
+                <p>Toplam fon dağılımı</p>
+              </div>
+              <button onclick="showPage('fund')">Detay ›</button>
+            </div>
+            <div class="finance-body">
+              <div class="finance-legend" id="financeHomeLegend"></div>
+              <div class="donut finance-donut" id="financeHomeDonut">
+                <span id="financeHomeTotal">₺0<br><small>Toplam Fon</small></span>
+              </div>
+              <div class="finance-mini-grid">
+                <div class="mini-fin green"><span>Aidatlar</span><strong id="financeAidatTotal">₺0</strong></div>
+                <div class="mini-fin blue"><span>Ekstra Gelir</span><strong id="financeExtraTotal">₺0</strong></div>
+                <div class="mini-fin red"><span>Giderler</span><strong id="financeExpenseTotal">₺0</strong></div>
+                <div class="mini-fin navy"><span>Kalan Fon</span><strong id="financeBalanceTotal">₺0</strong></div>
+              </div>
+            </div>
           </div>
 
-          <div class="dashboard-grid">
-            <div>
-              <div class="section-row"><h3>Son Yapılan Giderler</h3><button onclick="showPage('expenses')">Tümü ›</button></div>
-              <div class="list-card" id="recentExpenses"></div>
-            </div>
-            <div>
-              <div class="section-row"><h3>Ekstra Gelirler</h3><button onclick="showPage('incomes')">Tümü ›</button></div>
-              <div class="list-card" id="homeIncomeList"></div>
-            </div>
+          <div class="home-sections-grid">
             <div>
               <div class="section-row"><h3>Aidat Takibi</h3><button onclick="showPage('payments')">Tümü ›</button></div>
               <div class="aidat-hero mini">
@@ -71,8 +78,12 @@
               </div>
             </div>
             <div>
-              <div class="section-row"><h3>Fon Dağılımı</h3><button onclick="showPage('fund')">Tümü ›</button></div>
-              <div class="chart-card compact"><div class="donut-wrap"><div class="donut" id="fundDonut"><span id="fundDonutTotal">₺0<br><small>Toplam Gelir</small></span></div><div id="fundLegend" class="legend"></div></div></div>
+              <div class="section-row"><h3>Son Yapılan Giderler</h3><button onclick="showPage('expenses')">Tümü ›</button></div>
+              <div class="list-card" id="recentExpenses"></div>
+            </div>
+            <div>
+              <div class="section-row"><h3>Kritik Borçlular</h3><button onclick="showPage('apartments')">Tümü ›</button></div>
+              <div class="list-card debtor-list" id="criticalDebtors"></div>
             </div>
           </div>
 
@@ -98,6 +109,6 @@
     </div>
   </div>
   <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-title"><h3 id="modalTitle"></h3><button onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
-  <script src="app.js?v=10.0"></script>
+  <script src="app.js?v=11.0"></script>
 </body>
 </html>
